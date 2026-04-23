@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Salon Pudra - Management System</title>
+    <style>
+        :root { 
+            --pudra-pink: #fce4ec; 
+            --pudra-dark: #d81b60; 
+            --pudra-soft: #f8bbd0;
+            --cash: #43a047; 
+            --card: #1e88e5; 
+        }
+        
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: #fffafa; 
+            background-image: radial-gradient(#fce4ec 1px, transparent 1px);
+            background-size: 20px 20px;
+            margin: 0; padding: 0; color: #444; 
+        }
+
+        /* Екран входу */
+        #loginScreen { 
+            position: fixed; inset: 0; background: white; z-index: 9999; 
+            display: flex; align-items: center; justify-content: center; 
+        }
+        .login-card { 
+            padding: 40px; border-radius: 30px; border: 3px solid var(--pudra-pink); 
+            text-align: center; width: 90%; max-width: 400px; box-shadow: 0 15px 35px rgba(216, 27, 96, 0.1);
+        }
+
+        /* Навігація */
+        nav { 
+            background: white; padding: 12px; display: flex; gap: 10px; 
+            border-bottom: 3px solid var(--pudra-pink); position: sticky; top: 0; z-index: 1000; overflow-x: auto; 
+        }
+        nav button { 
+            padding: 10px 20px; border-radius: 20px; border: 2px solid var(--pudra-pink); 
+            background: white; cursor: pointer; white-space: nowrap; font-weight: 600; color: #555;
+            transition: 0.3s;
+        }
+        nav button.active { background: var(--pudra-pink); color: var(--pudra-dark); border-color: var(--pudra-soft); }
+
+        .container { padding: 15px; max-width: 1400px; margin: auto; }
+        .hidden { display: none !important; }
+
+        /* Шахматка */
+        .schedule-wrap { background: white; border-radius: 20px; overflow: auto; max-height: 80vh; border: 1px solid #eee; box-shadow: 0 10px 20px rgba(0,0,0,0.03); }
+        .grid { display: grid; background: #fef0f3; gap: 1px; min-width: 900px; }
+        .grid-cell { background: white; min-height: 100px; position: relative; }
+        
+        .header-cell { 
+            background: #fff0f3; position: sticky; top: 0; z-index: 100; 
+            height: 80px; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; text-align: center; 
+            border-bottom: 2px solid var(--pudra-pink);
+        }
+        .header-cell b { color: var(--pudra-dark); font-size: 14px; }
+        .header-cell small { font-size: 10px; color: #888; font-weight: normal; margin-top: 3px; }
+
+        .time-cell { background: #fafafa; font-weight: bold; position: sticky; left: 0; z-index: 90; width: 65px; display: flex; align-items: center; justify-content: center; color: var(--pudra-dark); }
+        .slot { height: 50px; border-bottom: 1px solid #fff5f7; }
+
+        /* Картка запису */
+        .booked { 
+            background: #fff9fa; border-left: 5px solid var(--pudra-soft); border-radius: 8px; 
+            width: 96%; height: 92%; position: absolute; left: 2%; top: 4%; z-index: 10; 
+            display: flex; flex-direction: column; padding: 6px; font-size: 11px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .booked.paid { border-left-color: var(--cash); background: #f1f8e9; }
+        
+        .app-controls { display: flex; gap: 5px; margin-top: auto; }
+        .btn-action { padding: 3px 8px; border-radius: 6px; border: none; font-size: 10px; font-weight: bold; cursor: pointer; color: white; }
+        .btn-pay { background: var(--cash); }
+        .btn-viber { background: #7360f2; text-decoration: none; display: flex; align-items: center; justify-content: center; }
+        .del-x { color: #ccc; border: none; background: none; position: absolute; top: 3px; right: 3px; cursor: pointer; font-size: 16px; }
+
+        /* Стильні картки та форми */
+        .card { background: white; padding: 25px; border-radius: 25px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.04); border: 1px solid #fce4ec; }
+        h3 { color: var(--pudra-dark); margin-top: 0; display: flex; align-items: center; gap: 10px; }
+        h3::before { content: '🌸'; }
+        
+        input, select { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #fce4ec; border-radius: 15px; font-size: 16px; background: #fffcfd; }
+        .btn-main { background: var(--pudra-dark); color: white; border: none; padding: 18px; border-radius: 15px; width: 100%; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; }
+        .btn-main:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        /* Модалка */
+        #paymentModal { position: fixed; inset: 0; background: rgba(216, 27, 96, 0.2); backdrop-filter: blur(5px); z-index: 10000; display: none; align-items: center; justify-content: center; }
+        .modal-card { background: white; padding: 35px; border-radius: 30px; width: 90%; max-width: 350px; text-align: center; border: 4px solid var(--pudra-pink); }
+
+        /* Звіти */
+        .stat-box { display: flex; justify-content: space-between; padding: 15px; background: #fffcfd; border-radius: 15px; margin-bottom: 10px; border: 1px solid #fce4ec; }
+        .stat-val { font-weight: bold; color: var(--pudra-dark); font-size: 18px; }
+    </style>
+</head>
+<body>
+
+<div id="loginScreen">
+    <div class="login-card">
+        <h1 style="color: var(--pudra-dark); margin-bottom: 10px;">🌸 Pudra 🌸</h1>
+        <p style="color: #888; margin-bottom: 30px;">Система керування салоном</p>
+        <input type="email" id="loginEmail" placeholder="Email">
+        <input type="password" id="loginPass" placeholder="Пароль">
+        <button class="btn-main" onclick="handleLogin()">Увійти як Адмін</button>
+        <button class="btn-main" style="background:#fce4ec; color: var(--pudra-dark); margin-top:15px; border: 1px solid var(--pudra-soft);" onclick="bypassLogin()">📱 Вхід для Майстрів</button>
+    </div>
+</div>
+
+<div id="paymentModal">
+    <div class="modal-card">
+        <h3 style="justify-content: center;">Оплата візиту</h3>
+        <p id="paymentInfo" style="font-weight: bold; font-size: 18px; margin: 20px 0;"></p>
+        <button class="btn-main" style="background:var(--cash); margin-bottom:12px;" onclick="confirmPayment('Готівка')">💵 Готівка</button>
+        <button class="btn-main" style="background:var(--card); margin-bottom:20px;" onclick="confirmPayment('Картка')">💳 Термінал (Картка)</button>
+        <button onclick="document.getElementById('paymentModal').style.display='none'" style="background:none; border:none; color:#aaa; cursor:pointer;">Скасувати</button>
+    </div>
+</div>
+
+<div id="mainApp" class="hidden">
+    <nav>
+        <button id="btn-cal" class="active" onclick="showSection('cal')">🗓 Розклад</button>
+        <button id="btn-add" onclick="showSection('add')">➕ Запис</button>
+        <button id="btn-boss" class="admin-only hidden" onclick="showSection('boss')">📈 Каса / Звіти</button>
+        <button id="btn-staff" class="admin-only hidden" onclick="showSection('staff')">👥 Майстри</button>
+        <button id="btn-price" class="admin-only hidden" onclick="showSection('price')">💰 Прайс</button>
+        <button onclick="handleLogout()" style="margin-left:auto; border:none; background:none; font-size:24px; cursor:pointer;">🌸</button>
+    </nav>
+
+    <div class="container">
+        <div id="section-cal" class="section">
+            <div style="text-align:center; padding:15px;">
+                <input type="date" id="viewDateSelector" onchange="renderGrid()" style="width:auto; border-radius:30px; padding:10px 25px;">
+            </div>
+            <div class="schedule-wrap"><div class="grid" id="mainGrid"></div></div>
+        </div>
+
+        <div id="section-boss" class="section hidden">
+            <div class="card">
+                <h3>Фінансові підсумки дня</h3>
+                <div id="bossStats"></div>
+            </div>
+        </div>
+
+        <div id="section-add" class="section hidden">
+            <div class="card">
+                <h3>Записати клієнта</h3>
+                <div style="display:flex; gap:10px;">
+                    <input type="date" id="appDate">
+                    <input type="time" id="appTime" step="1800" value="09:00">
+                </div>
+                <input type="text" id="clientName" placeholder="Ім'я клієнта">
+                <input type="tel" id="clientPhone" placeholder="380XXXXXXXXX">
+                <select id="selectService" onchange="applyServiceData()"></select>
+                <select id="selectMaster"></select>
+                <div style="display:flex; gap:10px;">
+                    <input type="number" id="appDuration" placeholder="Тривалість (хв)">
+                    <input type="number" id="appPrice" placeholder="Сума (грн)">
+                </div>
+                <button class="btn-main" onclick="addAppointment()">Підтвердити запис</button>
+            </div>
+        </div>
+
+        <div id="section-staff" class="section hidden">
+            <div class="card">
+                <h3>Додати спеціаліста</h3>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="mFirstName" placeholder="Ім'я">
+                    <input type="text" id="mLastName" placeholder="Прізвище">
+                </div>
+                <input type="text" id="mSpec" placeholder="Спеціалізація (через кому)">
+                <input type="number" id="mRate" placeholder="Зарплата (%)">
+                <button class="btn-main" onclick="saveMaster()">Зберегти у базу</button>
+                <div id="staffListRender" style="margin-top:30px;"></div>
+            </div>
+        </div>
+
+        <div id="section-price" class="section hidden">
+            <div class="card">
+                <h3>Керування прайсом</h3>
+                <button class="btn-main" style="background:var(--cash);" onclick="resetAndImportPrice()">🔄 Оновити/Завантажити повний прайс</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    const firebaseConfig = { 
+        apiKey: "AIzaSyC7G7e1gPoTeM0OgNlFhT1Gh4yHPbsVDAA", 
+        authDomain: "beautysalonapp-a04df.firebaseapp.com", 
+        projectId: "beautysalonapp-a04df", 
+        storageBucket: "beautysalonapp-a04df.firebasestorage.app", 
+        messagingSenderId: "109246653607", 
+        appId: "1:109246653607:web:9438a249d83fcdeffaa782" 
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    let masters = [], appointments = [], services = [], userRole = 'guest', currentPayId = null;
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    viewDateSelector.value = appDate.value = todayStr;
+
+    // --- АВТОРИЗАЦІЯ ---
+    window.handleLogin = async () => { try { await signInWithEmailAndPassword(auth, loginEmail.value, loginPass.value); } catch(e) { alert("Помилка"); } };
+    window.bypassLogin = () => { userRole='master'; loginScreen.style.display='none'; mainApp.classList.remove('hidden'); document.querySelectorAll('.admin-only').forEach(el=>el.classList.add('hidden')); loadData(); };
+    onAuthStateChanged(auth, user => { if(user) { userRole='admin'; loginScreen.style.display='none'; mainApp.classList.remove('hidden'); document.querySelectorAll('.admin-only').forEach(el=>el.classList.remove('hidden')); loadData(); } });
+    window.handleLogout = () => signOut(auth).then(() => location.reload());
+
+    function loadData() {
+        onSnapshot(collection(db, "masters"), snap => {
+            masters = snap.docs.map(d=>({id:d.id, ...d.data()}));
+            renderStaffList(); renderGrid();
+            selectMaster.innerHTML = masters.map(m=>`<option value="${m.name}">${m.firstName} ${m.lastName}</option>`).join('');
+        });
+        onSnapshot(collection(db, "services"), snap => {
+            services = snap.docs.map(d=>({id:d.id, ...d.data()}));
+            renderGroupedServices();
+        });
+        onSnapshot(collection(db, "appointments"), snap => {
+            appointments = snap.docs.map(d=>({id:d.id, ...d.data()}));
+            renderGrid(); if(userRole==='admin') updateBossStats();
+        });
+    }
+
+    // --- РОЗКЛАД ---
+    window.renderGrid = () => {
+        const sD = viewDateSelector.value;
+        const grid = document.getElementById('mainGrid');
+        grid.style.gridTemplateColumns = `65px repeat(${masters.length}, 1fr)`;
+        
+        let h = '<div class="grid-cell header-cell">🌸</div>';
+        masters.forEach(m => {
+            h += `<div class="grid-cell header-cell">
+                    <b>${m.firstName} ${m.lastName}</b>
+                    <small>${m.spec || 'Спеціаліст'}</small>
+                  </div>`;
+        });
+
+        for (let i = 9; i <= 18; i++) {
+            const h0 = i.toString().padStart(2,'0')+":00", h3 = i.toString().padStart(2,'0')+":30";
+            h += `<div class="grid-cell time-cell" style="height:100px">${h0}</div>`;
+            masters.forEach(m => {
+                h += `<div class="grid-cell" style="height:100px">`;
+                [h0, h3].forEach(t => {
+                    const b = appointments.find(a => a.masterId === m.name && a.date === sD && isTimeInSession(a.time, a.duration, t));
+                    h += `<div class="slot">`;
+                    if(b && b.time === t) {
+                        const paid = b.status === 'completed';
+                        h += `<div class="booked ${paid?'paid':''}">
+                                ${ (userRole === 'admin' && !paid) ? `<button class="del-x" onclick="deleteApp('${b.id}')">&times;</button>` : '' }
+                                <div style="font-weight:bold; color:var(--pudra-dark)">${b.clientName}</div>
+                                <div style="font-size:9px; color:#666">${b.serviceName}</div>
+                                <div class="app-controls">
+                                    <a href="viber://chat?number=${b.clientPhone.replace(/\D/g,'')}" class="btn-action btn-viber">Viber</a>
+                                    ${ (!paid && userRole === 'admin') ? `<button class="btn-action btn-pay" onclick="openPayment('${b.id}')">Оплата</button>` : `<span style="font-size:9px; color:var(--cash); font-weight:bold">${b.paymentType || ''}</span>` }
+                                </div>
+                              </div>`;
+                    } else if(b) h += `<div class="booked-continue"></div>`;
+                    h += `</div>`;
+                });
+                h += `</div>`;
+            });
+        }
+        grid.innerHTML = h;
+    };
+
+    // --- ФІНАНСИ ---
+    window.openPayment = (id) => {
+        const a = appointments.find(x => x.id === id);
+        currentPayId = id; paymentInfo.innerText = `${a.clientName}: ${a.price} грн`;
+        paymentModal.style.display = 'flex';
+    };
+    window.confirmPayment = async (type) => {
+        await updateDoc(doc(db, "appointments", currentPayId), { status: 'completed', paymentType: type });
+        paymentModal.style.display = 'none';
+    };
+    function updateBossStats() {
+        const today = viewDateSelector.value;
+        const paidToday = appointments.filter(a => a.date === today && a.status === 'completed');
+        let total=0, cash=0, card=0, salary=0;
+        paidToday.forEach(a => {
+            total += a.price;
+            if(a.paymentType==='Готівка') cash += a.price; else card += a.price;
+            const m = masters.find(mast => mast.name === a.masterId);
+            if(m) salary += (a.price * (m.rate/100));
+        });
+        bossStats.innerHTML = `
+            <div class="stat-box"><span>Всього каса:</span><span class="stat-val">${total} ₴</span></div>
+            <div class="stat-box"><span>Готівка:</span><span class="stat-val">${cash} ₴</span></div>
+            <div class="stat-box"><span>Термінал:</span><span class="stat-val">${card} ₴</span></div>
+            <div class="stat-box"><span>Зарплати майстрів:</span><span class="stat-val" style="color:#e67e22">${salary.toFixed(0)} ₴</span></div>
+            <div class="stat-box" style="border-top:2px solid var(--pudra-dark); background:#fff0f3">
+                <span>Чистий прибуток:</span><span class="stat-val" style="font-size:22px">${(total-salary).toFixed(0)} ₴</span>
+            </div>
+        `;
+    }
+
+    // --- ІНШЕ ---
+    window.addAppointment = async () => {
+        const s = services.find(x => x.id === selectService.value);
+        await addDoc(collection(db, "appointments"), {
+            clientName: clientName.value, clientPhone: clientPhone.value, serviceName: s?s.name:"Послуга",
+            date: appDate.value, time: appTime.value, duration: Number(appDuration.value),
+            masterId: selectMaster.value, price: Number(appPrice.value), status: 'pending'
+        });
+        showSection('cal');
+    };
+    window.saveMaster = async () => {
+        await addDoc(collection(db, "masters"), { firstName: mFirstName.value, lastName: mLastName.value, rate: mRate.value, spec: mSpec.value, name: mFirstName.value+" "+mLastName.value });
+        mFirstName.value=""; mLastName.value="";
+    };
+    function renderStaffList() { 
+        staffListRender.innerHTML = masters.map(m => `<div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:10px 20px;">
+            <b>${m.firstName} ${m.lastName}</b><button onclick="deleteDoc(doc(db,'masters','${m.id}'))" style="color:red; border:none; background:none;">Видалити</button>
+        </div>`).join('');
+    }
+    function renderGroupedServices() {
+        const cats = ["Жіночий зал", "Чоловічий зал", "Манікюр", "Педикюр", "Брови та Вії", "Перманент", "Макіяж", "Доглядові процедури"];
+        let html = '<option value="">-- Оберіть послугу --</option>';
+        cats.forEach(cat => {
+            const catServices = services.filter(s => s.category === cat);
+            if(catServices.length > 0) {
+                html += `<optgroup label="${cat}">`;
+                catServices.forEach(s => html += `<option value="${s.id}">${s.name} (${s.price} ₴)</option>`);
+                html += `</optgroup>`;
+            }
+        });
+        selectService.innerHTML = html;
+    }
+    function isTimeInSession(sT, sD, cT) { const [h1, m1]=sT.split(':').map(Number); const [h2, m2]=cT.split(':').map(Number); const start=h1*60+m1; const check=h2*60+m2; return check>=start && check<(start+sD); }
+    window.showSection = n => { document.querySelectorAll('.section').forEach(s=>s.classList.add('hidden')); document.getElementById('section-'+n).classList.remove('hidden'); document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active')); document.getElementById('btn-'+n).classList.add('active'); if(n==='cal') renderGrid(); };
+    window.deleteApp = async id => { if(confirm("Видалити?")) await deleteDoc(doc(db, "appointments", id)); };
+    window.applyServiceData = () => { const s = services.find(x => x.id === selectService.value); if(s) { appPrice.value = s.price; appDuration.value = s.duration; } };
+</script>
+</body>
+</html>
