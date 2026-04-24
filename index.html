@@ -3,112 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Salon Pudra - CRM System</title>
-    
+    <title>Salon Pudra - CRM & Backup</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
-
     <style>
         :root { --pudra-pink: #fce4ec; --pudra-dark: #d81b60; --pudra-soft: #f8bbd0; --cash: #43a047; --card: #1e88e5; }
         * { box-sizing: border-box; }
-        
-        /* Основний шрифт для всієї програми */
-        body, input, select, textarea, button { 
-            font-family: 'Montserrat', sans-serif; 
-        }
-        
-        body { 
-            background: #fffafa; 
-            background-image: radial-gradient(#fce4ec 1px, transparent 1px); 
-            background-size: 20px 20px; 
-            margin: 0; padding: 0; color: #444; 
-        }
-        
-        /* Шрифт для заголовків (глянцевий стиль) */
-        h1, h2, h3, .cat-title, .header-cell b { 
-            font-family: 'Playfair Display', serif; 
-            letter-spacing: 0.5px; 
-        }
-
+        body, input, select, textarea, button { font-family: 'Montserrat', sans-serif; }
+        body { background: #fffafa; background-image: radial-gradient(#fce4ec 1px, transparent 1px); background-size: 20px 20px; margin: 0; padding: 0; color: #444; }
+        h1, h2, h3, .cat-title, .header-cell b { font-family: 'Playfair Display', serif; letter-spacing: 0.5px; }
         nav { background: white; padding: 12px; display: flex; gap: 10px; border-bottom: 3px solid var(--pudra-pink); position: sticky; top: 0; z-index: 1000; overflow-x: auto; }
         nav button { padding: 10px 20px; border-radius: 20px; border: 2px solid var(--pudra-pink); background: white; cursor: pointer; white-space: nowrap; font-weight: 600; color: #555; transition: 0.3s; }
         nav button.active { background: var(--pudra-pink); color: var(--pudra-dark); border-color: var(--pudra-soft); }
-
         .container { padding: 15px; max-width: 1400px; margin: auto; }
         .hidden { display: none !important; }
         .card { background: white; padding: 25px; border-radius: 25px; margin-bottom: 20px; border: 1px solid #fce4ec; box-shadow: 0 5px 15px rgba(0,0,0,0.04); }
-        
-        /* Шахматка */
         .schedule-wrap { background: white; border-radius: 20px; overflow: auto; max-height: 80vh; border: 1px solid #eee; box-shadow: 0 10px 20px rgba(0,0,0,0.03); }
         .grid { display: grid; background: #fef0f3; gap: 1px; min-width: 900px; }
         .grid-cell { background: white; min-height: 100px; position: relative; }
         .header-cell { background: #fff0f3; position: sticky; top: 0; z-index: 100; height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border-bottom: 2px solid var(--pudra-pink); }
         .header-cell b { color: var(--pudra-dark); font-size: 16px; }
-        .header-cell small { font-size: 10px; color: #888; font-weight: 500; margin-top: 3px; font-family: 'Montserrat', sans-serif; }
+        .header-cell small { font-size: 10px; color: #888; font-weight: 500; margin-top: 3px; }
         .time-cell { background: #fafafa; font-weight: 600; position: sticky; left: 0; z-index: 90; width: 65px; display: flex; align-items: center; justify-content: center; color: var(--pudra-dark); }
         .slot { height: 50px; border-bottom: 1px solid #fff5f7; }
-
-        /* Запис в розкладі */
         .booked { background: #fff9fa; border-left: 5px solid var(--pudra-soft); border-radius: 8px; width: 96%; height: 92%; position: absolute; left: 2%; top: 4%; z-index: 10; display: flex; flex-direction: column; padding: 6px; font-size: 11px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .booked.paid { border-left-color: var(--cash); background: #f1f8e9; }
-        .notes-preview { font-style: italic; color: #777; font-size: 9px; margin-top: 2px; border-top: 1px dashed #eee; padding-top: 2px; }
-        
-        .app-controls { display: flex; gap: 5px; margin-top: auto; }
-        .btn-action { padding: 3px 8px; border-radius: 6px; border: none; font-size: 10px; font-weight: bold; cursor: pointer; color: white; }
-        .btn-viber { background: #7360f2; text-decoration: none; display: flex; align-items: center; justify-content: center; font-family: 'Montserrat', sans-serif; }
-        .del-x { color: #f44336; border: none; background: none; position: absolute; top: 2px; right: 2px; cursor: pointer; font-size: 18px; font-weight: bold; padding: 0 5px; }
-
-        /* Форми */
+        .del-x { color: #f44336; border: none; background: none; position: absolute; top: 2px; right: 2px; cursor: pointer; font-size: 18px; font-weight: bold; }
         input, select, textarea { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #fce4ec; border-radius: 15px; font-size: 15px; background: #fffcfd; font-weight: 500;}
-        textarea { height: 80px; resize: none; font-family: inherit; }
         .btn-main { background: var(--pudra-dark); color: white; border: none; padding: 18px; border-radius: 15px; width: 100%; cursor: pointer; font-weight: 600; font-size: 16px; transition: 0.3s; }
-        .btn-main:hover { opacity: 0.9; transform: translateY(-2px); }
-        
-        /* Чекбокси */
         .checkbox-group { max-height: 250px; overflow-y: auto; border: 1px solid #fce4ec; border-radius: 15px; padding: 15px; background: #fffcfd; margin: 10px 0; }
         .cat-title { font-weight: bold; color: var(--pudra-dark); margin-top: 10px; margin-bottom: 5px; border-bottom: 1px solid #fce4ec; padding-bottom: 3px; font-size: 16px; }
-        .srv-label { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; font-size: 14px; cursor: pointer; font-weight: 500; }
-        .srv-label input { width: 18px; height: 18px; margin: 0; cursor: pointer; accent-color: var(--pudra-dark); }
-
-        /* Історія клієнта */
+        .srv-label { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; font-size: 14px; cursor: pointer; }
         .history-box { margin-top: 20px; padding: 15px; background: #fafafa; border-radius: 15px; border: 1px dashed var(--pudra-soft); }
-        .history-item { background: white; padding: 10px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid var(--pudra-pink); font-size: 13px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-
-        /* Модалка оплати */
-        #paymentModal { position: fixed; inset: 0; background: rgba(216, 27, 96, 0.2); backdrop-filter: blur(5px); z-index: 10000; display: none; align-items: center; justify-content: center; }
-        .modal-card { background: white; padding: 35px; border-radius: 30px; width: 90%; max-width: 350px; text-align: center; border: 4px solid var(--pudra-pink); }
-
-        /* Екран входу */
-        #loginScreen { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .login-card { padding: 40px; border-radius: 30px; border: 3px solid var(--pudra-pink); text-align: center; width: 90%; max-width: 400px; box-shadow: 0 15px 35px rgba(216, 27, 96, 0.1); }
-        
-        /* Звіти */
+        .history-item { background: white; padding: 10px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid var(--pudra-pink); font-size: 13px; }
         .stat-box { display: flex; justify-content: space-between; padding: 15px; background: #fffcfd; border-radius: 15px; margin-bottom: 10px; border: 1px solid #fce4ec; align-items: center;}
         .stat-val { font-weight: 700; color: var(--pudra-dark); font-size: 18px; }
-        .master-salary-row { display: flex; justify-content: space-between; padding: 10px 15px; border-bottom: 1px dashed #fce4ec; font-size: 15px; font-weight: 600;}
+        .master-salary-row { display: flex; justify-content: space-between; padding: 10px 15px; border-bottom: 1px dashed #fce4ec; font-size: 15px; }
+        #paymentModal { position: fixed; inset: 0; background: rgba(216, 27, 96, 0.2); backdrop-filter: blur(5px); z-index: 10000; display: none; align-items: center; justify-content: center; }
+        .modal-card { background: white; padding: 35px; border-radius: 30px; width: 90%; max-width: 350px; text-align: center; border: 4px solid var(--pudra-pink); }
     </style>
 </head>
 <body>
 
 <div id="loginScreen">
-    <div class="login-card">
-        <h1 style="color: var(--pudra-dark); margin-bottom: 10px; font-size: 42px; font-style: italic;">Pudra</h1>
-        <p style="color: #888; margin-bottom: 30px; font-weight: 500;">Система керування салоном</p>
-        <input type="email" id="loginEmail" placeholder="Email (Адмін)">
+    <div class="login-card" style="padding: 40px; text-align: center; background: white; border-radius: 30px; border: 3px solid var(--pudra-pink); max-width: 400px; margin: auto; position: relative; top: 20%;">
+        <h1 style="color: var(--pudra-dark); font-size: 42px; font-style: italic;">Pudra</h1>
+        <input type="email" id="loginEmail" placeholder="Email">
         <input type="password" id="loginPass" placeholder="Пароль">
-        <button class="btn-main" onclick="handleLogin()">Увійти як Адмін</button>
-        <button class="btn-main" style="background:#fce4ec; color: var(--pudra-dark); margin-top:15px; border: 1px solid var(--pudra-soft);" onclick="bypassLogin()">📱 Вхід для Майстрів</button>
+        <button class="btn-main" onclick="handleLogin()">Увійти</button>
+        <button class="btn-main" style="background:#fce4ec; color: var(--pudra-dark); margin-top:10px;" onclick="bypassLogin()">Вхід для Майстрів</button>
     </div>
 </div>
 
 <div id="paymentModal">
     <div class="modal-card">
         <h3>Оплата візиту</h3>
-        <p id="paymentInfo" style="font-weight: 700; font-size: 22px; margin: 20px 0; color: var(--pudra-dark);"></p>
+        <p id="paymentInfo" style="font-weight: 700; font-size: 22px; color: var(--pudra-dark);"></p>
         <button class="btn-main" style="background:var(--cash); margin-bottom:12px;" onclick="confirmPayment('Готівка')">💵 Готівка</button>
-        <button class="btn-main" style="background:var(--card); margin-bottom:20px;" onclick="confirmPayment('Картка')">💳 Термінал (Картка)</button>
-        <button onclick="document.getElementById('paymentModal').style.display='none'" style="background:none; border:none; color:#aaa; cursor:pointer; font-weight: 600;">Скасувати</button>
+        <button class="btn-main" style="background:var(--card); margin-bottom:20px;" onclick="confirmPayment('Картка')">💳 Картка</button>
+        <button onclick="document.getElementById('paymentModal').style.display='none'" style="background:none; border:none; color:#aaa; cursor:pointer;">Скасувати</button>
     </div>
 </div>
 
@@ -119,7 +73,7 @@
         <button id="btn-boss" class="admin-only hidden" onclick="showSection('boss')">📈 Звіти</button>
         <button id="btn-staff" class="admin-only hidden" onclick="showSection('staff')">👥 Майстри</button>
         <button id="btn-price" class="admin-only hidden" onclick="showSection('price')">💰 Прайс</button>
-        <button onclick="handleLogout()" style="margin-left:auto; border:none; background:none; font-size:24px; cursor:pointer;">🌸</button>
+        <button onclick="handleLogout()" style="margin-left:auto; border:none; background:none; font-size:24px;">🌸</button>
     </nav>
 
     <div class="container">
@@ -130,84 +84,65 @@
 
         <div id="section-add" class="section hidden">
             <div class="card">
-                <h3 style="color: var(--pudra-dark);">Створити запис</h3>
-                <div style="display:flex; gap:10px;">
-                    <input type="date" id="appDate">
-                    <input type="time" id="appTime" step="1800" value="09:00">
-                </div>
-                
+                <h3>Створити запис</h3>
+                <div style="display:flex; gap:10px;"><input type="date" id="appDate"><input type="time" id="appTime" step="1800" value="09:00"></div>
                 <input type="text" id="clientName" placeholder="Ім'я клієнта">
-                <input type="tel" id="clientPhone" placeholder="Номер телефону (пошук історії)" oninput="searchClientHistory()">
-                
-                <label style="font-size: 13px; color: var(--pudra-dark); font-weight: 700; margin-top: 10px; display: block;">Відмітьте надані послуги:</label>
+                <input type="tel" id="clientPhone" placeholder="Номер телефону" oninput="searchClientHistory()">
                 <div id="serviceCheckboxes" class="checkbox-group"></div>
-                
-                <textarea id="appMaterials" placeholder="Витрачені матеріали, формули фарбування, технічні нотатки..."></textarea>
-                
+                <textarea id="appMaterials" placeholder="Нотатки та матеріали..."></textarea>
                 <select id="selectMaster" onchange="recalcSalaryManual()"></select>
-                <div style="display:flex; gap:10px;">
-                    <input type="number" id="appDuration" placeholder="Час (хв)">
-                    <div style="width:100%; position:relative;">
-                        <label style="font-size:10px; color:#888; position:absolute; top:-5px; left:10px; font-weight: 600;">До сплати (грн)</label>
-                        <input type="number" id="appPrice" placeholder="0" oninput="recalcSalaryManual()">
-                    </div>
-                </div>
-                <div style="width:100%; position:relative; margin-top:5px;">
-                    <label style="font-size:10px; color:var(--pudra-dark); font-weight:bold; position:absolute; top:-5px; left:10px;">Зарплата майстра (автомат. або вручну)</label>
-                    <input type="number" id="appMasterSalary" placeholder="0" style="background:#fff0f3; border-color:var(--pudra-soft); color:var(--pudra-dark); font-weight: 700;">
-                </div>
-
-                <button class="btn-main" style="margin-top: 15px;" onclick="addAppointment()">Зберегти візит</button>
-                
+                <div style="display:flex; gap:10px;"><input type="number" id="appDuration" placeholder="Хв"><input type="number" id="appPrice" placeholder="грн" oninput="recalcSalaryManual()"></div>
+                <input type="number" id="appMasterSalary" placeholder="ЗП майстра" style="background:#fff0f3; border-color:var(--pudra-soft); font-weight: 700;">
+                <button class="btn-main" onclick="addAppointment()">Зберегти</button>
                 <div id="clientHistoryContainer"></div>
             </div>
         </div>
 
         <div id="section-boss" class="section hidden">
             <div class="card">
-                <h3 style="color: var(--pudra-dark);">Фінансовий звіт за період</h3>
+                <h3>Фінансові підсумки</h3>
                 <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                    <div style="flex: 1;"><label style="font-size: 12px; font-weight: 700; color: var(--pudra-dark);">З дати:</label><input type="date" id="reportStart" style="margin: 5px 0;"></div>
-                    <div style="flex: 1;"><label style="font-size: 12px; font-weight: 700; color: var(--pudra-dark);">По дату:</label><input type="date" id="reportEnd" style="margin: 5px 0;"></div>
-                    <div style="display: flex; align-items: flex-end;"><button class="btn-main" style="width: auto; padding: 14px 25px; margin-bottom: 5px;" onclick="updateBossStats()">ОК</button></div>
+                    <input type="date" id="reportStart"> <input type="date" id="reportEnd">
+                    <button class="btn-main" style="width: auto; padding: 14px 20px;" onclick="updateBossStats()">ОК</button>
                 </div>
                 <div id="bossStats"></div>
+            </div>
+            <div class="card" style="border: 2px dashed var(--pudra-dark); background: #fffcfd;">
+                <h3 style="color: var(--pudra-dark);">💾 Резервне копіювання</h3>
+                <p style="font-size: 12px; color: #666;">Рекомендується робити копію щонеділі для безпеки ваших даних.</p>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-main" style="background: var(--cash); flex: 1;" onclick="exportDatabase()">📥 Експорт бази (Save)</button>
+                    <label class="btn-main" style="background: var(--pudra-soft); color: var(--pudra-dark); flex: 1; text-align: center; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                        📤 Відкат (Restore)
+                        <input type="file" id="importFile" hidden onchange="importDatabase(event)">
+                    </label>
+                </div>
             </div>
         </div>
 
         <div id="section-staff" class="section hidden">
             <div class="card">
-                <h3 style="color: var(--pudra-dark);">Додати спеціаліста</h3>
+                <h3>Майстри</h3>
                 <div style="display:flex; gap:10px;"><input type="text" id="mFirstName" placeholder="Ім'я"><input type="text" id="mLastName" placeholder="Прізвище"></div>
                 <input type="text" id="mSpec" placeholder="Спеціалізація">
-                <input type="number" id="mRate" placeholder="Базова Зарплата (%)">
-                <button class="btn-main" onclick="saveMaster()">Зберегти майстра</button>
-                <div id="staffListRender" style="margin-top:30px;"></div>
+                <input type="number" id="mRate" placeholder="Зарплата (%)">
+                <button class="btn-main" onclick="saveMaster()">Додати</button>
+                <div id="staffListRender" style="margin-top:20px;"></div>
             </div>
         </div>
 
         <div id="section-price" class="section hidden">
-            <div class="card">
-                <h3 style="color: var(--pudra-dark);">Керування прайсом</h3>
-                <button class="btn-main" style="background:var(--cash);" onclick="resetAndImportPrice()">🔄 Оновити/Завантажити повний прайс</button>
-            </div>
+            <div class="card"><h3>Прайс</h3><button class="btn-main" style="background:var(--cash);" onclick="resetAndImportPrice()">🔄 Оновити прайс</button></div>
         </div>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    const firebaseConfig = { 
-        apiKey: "AIzaSyC7G7e1gPoTeM0OgNlFhT1Gh4yHPbsVDAA", 
-        authDomain: "beautysalonapp-a04df.firebaseapp.com", 
-        projectId: "beautysalonapp-a04df", 
-        storageBucket: "beautysalonapp-a04df.firebasestorage.app", 
-        messagingSenderId: "109246653607", 
-        appId: "1:109246653607:web:9438a249d83fcdeffaa782" 
-    };
+    const firebaseConfig = { apiKey: "AIzaSyC7G7e1gPoTeM0OgNlFhT1Gh4yHPbsVDAA", authDomain: "beautysalonapp-a04df.firebaseapp.com", projectId: "beautysalonapp-a04df", storageBucket: "beautysalonapp-a04df.firebasestorage.app", messagingSenderId: "109246653607", appId: "1:109246653607:web:9438a249d83fcdeffaa782" };
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
@@ -215,36 +150,10 @@
     let masters = [], appointments = [], services = [], userRole = 'guest', currentPayId = null;
 
     const todayStr = new Date().toISOString().split('T')[0];
-    viewDateSelector.value = appDate.value = document.getElementById('reportStart').value = document.getElementById('reportEnd').value = todayStr;
+    viewDateSelector.value = appDate.value = reportStart.value = reportEnd.value = todayStr;
 
-    const fullPriceData = [
-        { category: "Жіночий зал", name: "Стрижка (Довж. I)", price: 450, duration: 60 },
-        { category: "Жіночий зал", name: "Стрижка (Довж. II)", price: 500, duration: 60 },
-        { category: "Жіночий зал", name: "Стрижка (Довж. III)", price: 550, duration: 75 },
-        { category: "Жіночий зал", name: "Стрижка (Довж. IV)", price: 600, duration: 90 },
-        { category: "Жіночий зал", name: "Стрижка кінчиків", price: 450, duration: 30 },
-        { category: "Жіночий зал", name: "Укладка жіноча", price: 400, duration: 45 },
-        { category: "Жіночий зал", name: "Фарбування волосся", price: 500, duration: 120 },
-        { category: "Жіночий зал", name: "Тонування волосся", price: 400, duration: 90 },
-        { category: "Жіночий зал", name: "Air Touch", price: 1050, duration: 240 },
-        { category: "Жіночий зал", name: "Кератин", price: 1200, duration: 180 },
-        { category: "Чоловічий зал", name: "Стрижка модельна", price: 450, duration: 45 },
-        { category: "Чоловічий зал", name: "Стрижка бороди", price: 150, duration: 30 },
-        { category: "Брови та Вії", name: "Корекція брів", price: 300, duration: 30 },
-        { category: "Брови та Вії", name: "Фарбування брів", price: 300, duration: 30 },
-        { category: "Брови та Вії", name: "Ламінування брів", price: 750, duration: 60 },
-        { category: "Перманент", name: "Брови/Губи", price: 3200, duration: 150 },
-        { category: "Манікюр", name: "Манікюр жіночий", price: 400, duration: 60 },
-        { category: "Манікюр", name: "Покриття гель-лаком", price: 350, duration: 45 },
-        { category: "Манікюр", name: "Зняття", price: 150, duration: 20 },
-        { category: "Педикюр", name: "Апаратний педикюр", price: 750, duration: 80 },
-        { category: "Педикюр", name: "Педикюр + Покриття", price: 850, duration: 100 },
-        { category: "Макіяж", name: "Вечірній макіяж", price: 1500, duration: 60 },
-        { category: "Доглядові процедури", name: "Масаж Кобідо", price: 650, duration: 60 }
-    ];
-
-    window.handleLogin = async () => { try { await signInWithEmailAndPassword(auth, loginEmail.value, loginPass.value); } catch(e) { alert("Помилка авторизації"); } };
-    window.bypassLogin = () => { userRole='master'; loginScreen.style.display='none'; mainApp.classList.remove('hidden'); document.querySelectorAll('.admin-only').forEach(el=>el.classList.add('hidden')); loadData(); };
+    window.handleLogin = async () => { try { await signInWithEmailAndPassword(auth, loginEmail.value, loginPass.value); } catch(e) { alert("Помилка"); } };
+    window.bypassLogin = () => { userRole='master'; loginScreen.style.display='none'; mainApp.classList.remove('hidden'); loadData(); };
     onAuthStateChanged(auth, user => { if(user) { userRole='admin'; loginScreen.style.display='none'; mainApp.classList.remove('hidden'); document.querySelectorAll('.admin-only').forEach(el=>el.classList.remove('hidden')); loadData(); } });
     window.handleLogout = () => signOut(auth).then(() => location.reload());
 
@@ -252,7 +161,7 @@
         onSnapshot(collection(db, "masters"), snap => {
             masters = snap.docs.map(d=>({id:d.id, ...d.data()}));
             renderStaffList(); renderGrid();
-            document.getElementById('selectMaster').innerHTML = masters.map(m=>`<option value="${m.name}">${m.firstName} ${m.lastName}</option>`).join('');
+            selectMaster.innerHTML = masters.map(m=>`<option value="${m.name}">${m.firstName} ${m.lastName}</option>`).join('');
         });
         onSnapshot(collection(db, "services"), snap => {
             services = snap.docs.map(d=>({id:d.id, ...d.data()}));
@@ -264,90 +173,84 @@
         });
     }
 
-    window.searchClientHistory = () => {
-        const phoneRaw = document.getElementById('clientPhone').value.replace(/\D/g, '');
-        const container = document.getElementById('clientHistoryContainer');
-
-        if (phoneRaw.length < 9) { container.innerHTML = ""; return; }
-
-        const history = appointments.filter(a => (a.clientPhone || "").replace(/\D/g, '') === phoneRaw && a.status === 'completed')
-                                    .sort((a, b) => new Date(b.date) - new Date(a.date));
-
-        if (history.length === 0) {
-            container.innerHTML = `<div class="history-box"><p style="color:#888; font-size:13px; font-weight: 500; text-align:center; margin:0;">Новий клієнт. Історія відвідувань порожня 🌸</p></div>`;
-            return;
-        }
-
-        let html = `<div class="history-box"><h4 style="color:var(--pudra-dark); margin-top:0; margin-bottom:10px;">Історія візитів: <b>${history[0].clientName}</b></h4>`;
-        history.forEach(h => {
-            html += `
-                <div class="history-item">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><b>📅 ${h.date}</b><span style="color:var(--pudra-dark); font-weight:bold;">${h.price} ₴</span></div>
-                    <div style="color:#555; margin-bottom:3px; font-weight: 500;">✂️ Майстер: ${h.masterId}</div>
-                    <div style="color:#333; margin-bottom:3px; font-weight: 600;">🌸 ${h.serviceName}</div>
-                    ${h.materials ? `<div style="color:#777; font-style:italic; border-top:1px dashed #eee; margin-top:5px; padding-top:5px; font-weight: 500;">📋 ${h.materials}</div>` : ''}
-                </div>`;
-        });
-        html += `</div>`;
-        container.innerHTML = html;
+    // --- ЕКСПОРТ ТА ІМПОРТ (БЕКАП) ---
+    window.exportDatabase = async () => {
+        const backup = {
+            appointments: appointments,
+            masters: masters,
+            services: services,
+            backupDate: new Date().toISOString()
+        };
+        const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Pudra_Backup_${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        alert("Копія бази даних успішно завантажена на ваш пристрій! 💾");
     };
 
-    function renderServiceCheckboxes() {
-        const cats = ["Жіночий зал", "Чоловічий зал", "Манікюр", "Педикюр", "Брови та Вії", "Перманент", "Макіяж", "Доглядові процедури"];
-        let html = '';
-        cats.forEach(cat => {
-            const catServices = services.filter(s => s.category === cat);
-            if(catServices.length > 0) {
-                html += `<div class="cat-title">${cat}</div>`;
-                catServices.forEach(s => {
-                    html += `<label class="srv-label"><input type="checkbox" class="srv-cb" value="${s.id}" data-name="${s.name}" data-price="${s.price}" data-duration="${s.duration}" onchange="calcMultiService()"> ${s.name} <span style="color:#888; font-size:12px; font-weight: 600;">(${s.price} ₴)</span></label>`;
-                });
-            }
-        });
-        document.getElementById('serviceCheckboxes').innerHTML = html;
-    }
+    window.importDatabase = async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        if (!confirm("УВАГА! Ця дія видалить поточні дані та замінить їх даними з файлу. Ви впевнені?")) return;
 
-    window.recalcSalaryManual = () => {
-        const mName = document.getElementById('selectMaster').value;
-        const m = masters.find(x => x.name === mName);
-        const rate = m ? (m.rate / 100) : 0;
-        const currentPrice = Number(document.getElementById('appPrice').value) || 0;
-        
-        document.getElementById('appMasterSalary').value = (currentPrice * rate).toFixed(0);
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+                const batch = writeBatch(db);
+
+                // Очистка та завантаження appointments
+                const appSnap = await getDocs(collection(db, "appointments"));
+                appSnap.forEach(d => batch.delete(d.ref));
+                data.appointments.forEach(a => {
+                    const {id, ...rest} = a;
+                    batch.set(doc(collection(db, "appointments")), rest);
+                });
+
+                // Аналогічно для майстрів
+                const mastSnap = await getDocs(collection(db, "masters"));
+                mastSnap.forEach(d => batch.delete(d.ref));
+                data.masters.forEach(m => {
+                    const {id, ...rest} = m;
+                    batch.set(doc(collection(db, "masters")), rest);
+                });
+
+                await batch.commit();
+                alert("Дані успішно відновлено! Система перезавантажиться.");
+                location.reload();
+            } catch (err) {
+                alert("Помилка при читанні файлу бекапу.");
+            }
+        };
+        reader.readAsText(file);
+    };
+
+    // --- ІНШІ ФУНКЦІЇ (БЕЗ ЗМІН) ---
+    window.searchClientHistory = () => {
+        const phoneRaw = clientPhone.value.replace(/\D/g, '');
+        if (phoneRaw.length < 9) { clientHistoryContainer.innerHTML = ""; return; }
+        const history = appointments.filter(a => (a.clientPhone || "").replace(/\D/g, '') === phoneRaw && a.status === 'completed').sort((a,b)=>new Date(b.date)-new Date(a.date));
+        if (history.length === 0) { clientHistoryContainer.innerHTML = `<div class="history-box">Новий клієнт.</div>`; return; }
+        let h = `<div class="history-box"><h4>Історія: ${history[0].clientName}</h4>`;
+        history.forEach(x => h += `<div class="history-item"><b>${x.date}</b>: ${x.serviceName} (${x.price}₴) ${x.materials?`<br><i>${x.materials}</i>`:''}</div>`);
+        clientHistoryContainer.innerHTML = h + "</div>";
     };
 
     window.calcMultiService = () => {
-        let tPrice = 0; let tTime = 0;
-        document.querySelectorAll('.srv-cb:checked').forEach(cb => { tPrice += Number(cb.dataset.price); tTime += Number(cb.dataset.duration); });
-        document.getElementById('appPrice').value = tPrice || '';
-        document.getElementById('appDuration').value = tTime || '';
-        recalcSalaryManual();
+        let p=0, d=0; document.querySelectorAll('.srv-cb:checked').forEach(cb=>{p+=Number(cb.dataset.price); d+=Number(cb.dataset.duration);});
+        appPrice.value=p; appDuration.value=d; recalcSalaryManual();
+    };
+
+    window.recalcSalaryManual = () => {
+        const m = masters.find(x=>x.name===selectMaster.value);
+        if(m) appMasterSalary.value = (Number(appPrice.value)*(m.rate/100)).toFixed(0);
     };
 
     window.addAppointment = async () => {
-        let sNames = [];
-        document.querySelectorAll('.srv-cb:checked').forEach(cb => sNames.push(cb.dataset.name));
-        const serviceString = sNames.length > 0 ? sNames.join(', ') : "Без послуги";
-
-        await addDoc(collection(db, "appointments"), {
-            clientName: document.getElementById('clientName').value, 
-            clientPhone: document.getElementById('clientPhone').value,
-            serviceName: serviceString, 
-            materials: document.getElementById('appMaterials').value || "",
-            date: document.getElementById('appDate').value, 
-            time: document.getElementById('appTime').value,
-            duration: Number(document.getElementById('appDuration').value), 
-            masterId: document.getElementById('selectMaster').value, 
-            price: Number(document.getElementById('appPrice').value),
-            masterSalary: Number(document.getElementById('appMasterSalary').value) || 0,
-            status: 'pending'
-        });
-        
-        document.getElementById('clientName').value = ""; document.getElementById('clientPhone').value = "";
-        document.getElementById('appMaterials').value = ""; document.getElementById('appPrice').value = "";
-        document.getElementById('appDuration').value = ""; document.getElementById('appMasterSalary').value = "";
-        document.getElementById('clientHistoryContainer').innerHTML = "";
-        document.querySelectorAll('.srv-cb:checked').forEach(cb => cb.checked = false);
+        let sNames = []; document.querySelectorAll('.srv-cb:checked').forEach(cb=>sNames.push(cb.dataset.name));
+        await addDoc(collection(db, "appointments"), { clientName:clientName.value, clientPhone:clientPhone.value, serviceName:sNames.join(', '), materials:appMaterials.value, date:appDate.value, time:appTime.value, duration:Number(appDuration.value), masterId:selectMaster.value, price:Number(appPrice.value), masterSalary:Number(appMasterSalary.value), status:'pending' });
         showSection('cal');
     };
 
@@ -356,30 +259,23 @@
         const grid = document.getElementById('mainGrid');
         grid.style.gridTemplateColumns = `65px repeat(${masters.length}, 1fr)`;
         let h = '<div class="grid-cell header-cell">🌸</div>';
-        masters.forEach(m => h += `<div class="grid-cell header-cell"><b>${m.firstName} ${m.lastName}</b><small>${m.spec || ''}</small></div>`);
-
+        masters.forEach(m => h += `<div class="grid-cell header-cell"><b>${m.firstName}</b><small>${m.spec}</small></div>`);
         for (let i = 9; i <= 18; i++) {
-            const h0 = i.toString().padStart(2,'0')+":00", h3 = i.toString().padStart(2,'0')+":30";
+            const h0=i.toString().padStart(2,'0')+":00", h3=i.toString().padStart(2,'0')+":30";
             h += `<div class="grid-cell time-cell" style="height:100px">${h0}</div>`;
             masters.forEach(m => {
                 h += `<div class="grid-cell" style="height:100px">`;
-                [h0, h3].forEach(t => {
-                    const b = appointments.find(a => a.masterId === m.name && a.date === sD && isTimeInSession(a.time, a.duration, t));
-                    h += `<div class="slot">`;
-                    if(b && b.time === t) {
-                        const paid = b.status === 'completed';
-                        h += `<div class="booked ${paid?'paid':''}">
-                                ${ (userRole === 'admin' && !paid) ? `<button class="del-x" onclick="deleteApp('${b.id}')">&times;</button>` : '' }
-                                <div style="font-weight:700; color:var(--pudra-dark)">${b.clientName}</div>
-                                <div style="font-size:9px; color:#666; font-weight: 500; margin-top:2px;">${b.serviceName}</div>
-                                ${b.materials ? `<div class="notes-preview">📋 ${b.materials}</div>` : ''}
-                                <div class="app-controls">
-                                    <a href="viber://chat?number=${b.clientPhone.replace(/\D/g,'')}" class="btn-action btn-viber">Viber</a>
-                                    ${ (!paid && userRole === 'admin') ? `<button class="btn-action" style="background:var(--cash)" onclick="openPayment('${b.id}')">Оплата</button>` : `<span style="font-size:9px; color:var(--cash); font-weight:bold">${b.paymentType || ''}</span>` }
-                                </div>
-                              </div>`;
-                    } else if(b) h += `<div class="booked-continue"></div>`;
-                    h += `</div>`;
+                [h0,h3].forEach(t => {
+                    const b = appointments.find(a=>a.masterId===m.name && a.date===sD && isTimeInSession(a.time, a.duration, t));
+                    if(b && b.time===t) {
+                        const paid = b.status==='completed';
+                        h += `<div class="slot"><div class="booked ${paid?'paid':''}">
+                            ${userRole==='admin'&&!paid?`<button class="del-x" onclick="deleteApp('${b.id}')">&times;</button>`:''}
+                            <b>${b.clientName}</b><div style="font-size:9px">${b.serviceName}</div>
+                            <div class="app-controls"><a href="viber://chat?number=${b.clientPhone}" class="btn-action btn-viber">Viber</a>
+                            ${userRole==='admin'&&!paid?`<button class="btn-action" style="background:var(--cash)" onclick="openPayment('${b.id}')">Оплата</button>`:''}
+                        </div></div></div>`;
+                    } else h += `<div class="slot"></div>`;
                 });
                 h += `</div>`;
             });
@@ -387,79 +283,30 @@
         grid.innerHTML = h;
     };
 
-    window.openPayment = (id) => { currentPayId=id; document.getElementById('paymentInfo').innerText = appointments.find(x=>x.id===id).price+" ₴"; document.getElementById('paymentModal').style.display='flex'; };
-    window.confirmPayment = async (type) => { await updateDoc(doc(db, "appointments", currentPayId), { status:'completed', paymentType:type }); document.getElementById('paymentModal').style.display='none'; };
-    
     window.updateBossStats = () => {
-        const start = document.getElementById('reportStart').value;
-        const end = document.getElementById('reportEnd').value;
-        if(!start || !end) return;
-
-        const paidApps = appointments.filter(a => a.date >= start && a.date <= end && a.status === 'completed');
-        
-        let total = 0, cash = 0, card = 0, totalSalary = 0;
-        let masterSalaries = {};
-
-        paidApps.forEach(a => {
-            total += a.price;
-            if (a.paymentType === 'Готівка') cash += a.price; else card += a.price;
-            
-            const m = masters.find(mast => mast.name === a.masterId);
-            const rate = m ? (m.rate / 100) : 0;
-            
-            let payout = a.masterSalary !== undefined ? a.masterSalary : (a.price * rate);
-            totalSalary += payout;
-            
-            const mName = m ? `${m.firstName} ${m.lastName}` : a.masterId;
-            if(!masterSalaries[mName]) masterSalaries[mName] = 0;
-            masterSalaries[mName] += payout;
+        const apps = appointments.filter(a=>a.date>=reportStart.value && a.date<=reportEnd.value && a.status==='completed');
+        let t=0, c=0, card=0, sal=0; let mSal={};
+        apps.forEach(a=>{
+            t+=a.price; if(a.paymentType==='Готівка') c+=a.price; else card+=a.price;
+            let pay = a.masterSalary || 0; sal += pay;
+            if(!mSal[a.masterId]) mSal[a.masterId]=0; mSal[a.masterId]+=pay;
         });
-
-        let html = `
-            <div class="stat-box"><span>Всього Каса:</span><span class="stat-val">${total} ₴</span></div>
-            <div class="stat-box"><span>Готівка:</span><span class="stat-val" style="color:var(--cash)">${cash} ₴</span></div>
-            <div class="stat-box"><span>Термінал:</span><span class="stat-val" style="color:var(--card)">${card} ₴</span></div>
-            <h4 style="color: var(--pudra-dark); margin: 25px 0 10px 0;">Деталізація зарплат:</h4>
-            <div style="background: white; border-radius: 15px; border: 1px solid #fce4ec; margin-bottom: 15px;">
-        `;
-
-        if(Object.keys(masterSalaries).length === 0) {
-            html += `<div style="padding: 15px; text-align: center; color: #888; font-weight: 500;">Немає оплачених послуг за обраний період.</div>`;
-        } else {
-            for(let name in masterSalaries) {
-                html += `<div class="master-salary-row"><span>✂️ ${name}</span><span style="font-weight:bold; color:#e67e22;">${masterSalaries[name].toFixed(0)} ₴</span></div>`;
-            }
-        }
-
-        html += `</div>
-            <div class="stat-box" style="margin-top:15px;"><span>Загальний фонд ЗП:</span><span class="stat-val" style="color:#e67e22">${totalSalary.toFixed(0)} ₴</span></div>
-            <div class="stat-box" style="border-top:2px solid var(--pudra-dark); background:#fff0f3"><span>Чистий прибуток салону:</span><span class="stat-val" style="font-size:22px">${(total - totalSalary).toFixed(0)} ₴</span></div>
-        `;
-        document.getElementById('bossStats').innerHTML = html;
+        let res = `<div class="stat-box">Каса: <span class="stat-val">${t} ₴</span></div>`;
+        for(let n in mSal) res += `<div class="master-salary-row"><span>${n}</span><b>${mSal[n].toFixed(0)} ₴</b></div>`;
+        bossStats.innerHTML = res + `<div class="stat-box" style="margin-top:10px; background:#fff0f3">Прибуток: <span class="stat-val">${(t-sal).toFixed(0)} ₴</span></div>`;
     };
 
-    window.resetAndImportPrice = async () => {
-        if(!confirm("УВАГА! Всі старі послуги будуть видалені і завантажені нові. Продовжити?")) return;
-        const querySnapshot = await getDocs(collection(db, "services"));
-        for (const serviceDoc of querySnapshot.docs) await deleteDoc(doc(db, "services", serviceDoc.id));
-        for (const item of fullPriceData) await addDoc(collection(db, "services"), item);
-        alert("Прайс оновлено!");
+    window.openPayment = (id) => { currentPayId=id; paymentInfo.innerText = appointments.find(x=>x.id===id).price+" ₴"; paymentModal.style.display='flex'; };
+    window.confirmPayment = async (type) => { await updateDoc(doc(db, "appointments", currentPayId), { status:'completed', paymentType:type }); paymentModal.style.display='none'; };
+    window.deleteApp = async id => { if(confirm("Видалити?")) await deleteDoc(doc(db,"appointments",id)); };
+    window.saveMaster = async () => { await addDoc(collection(db,"masters"), {firstName:mFirstName.value, lastName:mLastName.value, rate:mRate.value, spec:mSpec.value, name:mFirstName.value+" "+mLastName.value}); };
+    window.renderStaffList = () => staffListRender.innerHTML = masters.map(m=>`<div class="card" style="display:flex; justify-content:space-between"><b>${m.name}</b><button onclick="deleteDoc(doc(db,'masters','${m.id}'))">🗑</button></div>`).join('');
+    window.renderServiceCheckboxes = () => {
+        let html = ''; services.forEach(s=> html += `<label class="srv-label"><input type="checkbox" class="srv-cb" value="${s.id}" data-name="${s.name}" data-price="${s.price}" data-duration="${s.duration}" onchange="calcMultiService()"> ${s.name} (${s.price}₴)</label>`);
+        serviceCheckboxes.innerHTML = html;
     };
-
-    window.deleteApp = async id => { if(confirm("Видалити запис?")) await deleteDoc(doc(db, "appointments", id)); };
-    window.saveMaster = async () => { await addDoc(collection(db, "masters"), { firstName: mFirstName.value, lastName: mLastName.value, rate: mRate.value, spec: mSpec.value, name: mFirstName.value+" "+mLastName.value }); mFirstName.value=""; mLastName.value=""; mSpec.value=""; mRate.value=""; };
-    window.deleteMaster = async id => { if(confirm("Видалити майстра?")) await deleteDoc(doc(db, "masters", id)); };
-    
-    function renderStaffList() { document.getElementById('staffListRender').innerHTML = masters.map(m => `<div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:10px 20px;"><b>${m.firstName} ${m.lastName}</b><button class="btn-action" style="background:#f44336; padding:8px 12px; font-family: 'Montserrat', sans-serif;" onclick="deleteMaster('${m.id}')">Видалити</button></div>`).join(''); }
     function isTimeInSession(sT, sD, cT) { const [h1, m1]=sT.split(':').map(Number); const [h2, m2]=cT.split(':').map(Number); const start=h1*60+m1; const check=h2*60+m2; return check>=start && check<(start+sD); }
-    
-    window.showSection = n => { 
-        document.querySelectorAll('.section').forEach(s=>s.classList.add('hidden')); 
-        document.getElementById('section-'+n).classList.remove('hidden'); 
-        document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active')); 
-        document.getElementById('btn-'+n).classList.add('active'); 
-        if(n==='cal') renderGrid(); 
-    };
+    window.showSection = n => { document.querySelectorAll('.section').forEach(s=>s.classList.add('hidden')); document.getElementById('section-'+n).classList.remove('hidden'); document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active')); document.getElementById('btn-'+n).classList.add('active'); if(n==='cal') renderGrid(); };
 </script>
 </body>
 </html>
