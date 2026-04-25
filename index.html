@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Salon Pudra - CRM & Backup</title>
+    <title>Salon Pudra v40 - Masters Contacts</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
@@ -12,42 +12,67 @@
         * { box-sizing: border-box; }
         body, input, select, textarea, button { font-family: 'Montserrat', sans-serif; }
         body { background: #fffafa; background-image: radial-gradient(#fce4ec 1px, transparent 1px); background-size: 20px 20px; margin: 0; padding: 0; color: #444; }
-        h1, h2, h3, .cat-title, .header-cell b { font-family: 'Playfair Display', serif; letter-spacing: 0.5px; }
-        nav { background: white; padding: 12px; display: flex; gap: 10px; border-bottom: 3px solid var(--pudra-pink); position: sticky; top: 0; z-index: 1000; overflow-x: auto; }
+        h1, h2, h3, h4, .cat-title, .header-cell b { font-family: 'Playfair Display', serif; letter-spacing: 0.5px; }
+        
+        nav { background: white; padding: 12px; display: flex; gap: 10px; border-bottom: 3px solid var(--pudra-pink); position: sticky; top: 0; z-index: 1000; overflow-x: auto; align-items: center; }
         nav button { padding: 10px 20px; border-radius: 20px; border: 2px solid var(--pudra-pink); background: white; cursor: pointer; white-space: nowrap; font-weight: 600; color: #555; transition: 0.3s; }
         nav button.active { background: var(--pudra-pink); color: var(--pudra-dark); border-color: var(--pudra-soft); }
+
         .container { padding: 15px; max-width: 1400px; margin: auto; }
         .hidden { display: none !important; }
         .card { background: white; padding: 25px; border-radius: 25px; margin-bottom: 20px; border: 1px solid #fce4ec; box-shadow: 0 5px 15px rgba(0,0,0,0.04); }
-        .schedule-wrap { background: white; border-radius: 20px; overflow: auto; max-height: 80vh; border: 1px solid #eee; box-shadow: 0 10px 20px rgba(0,0,0,0.03); }
+        
+        .schedule-wrap { background: white; border-radius: 20px; overflow: auto; max-height: 85vh; border: 1px solid #eee; box-shadow: 0 10px 20px rgba(0,0,0,0.03); }
         .grid { display: grid; background: #fef0f3; gap: 1px; min-width: 900px; }
-        .grid-cell { background: white; min-height: 100px; position: relative; }
-        .header-cell { background: #fff0f3; position: sticky; top: 0; z-index: 100; height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border-bottom: 2px solid var(--pudra-pink); }
-        .header-cell b { color: var(--pudra-dark); font-size: 16px; }
-        .header-cell small { font-size: 10px; color: #888; font-weight: 500; margin-top: 3px; }
-        .time-cell { background: #fafafa; font-weight: 600; position: sticky; left: 0; z-index: 90; width: 65px; display: flex; align-items: center; justify-content: center; color: var(--pudra-dark); }
-        .slot { height: 50px; border-bottom: 1px solid #fff5f7; }
-        .booked { background: #fff9fa; border-left: 5px solid var(--pudra-soft); border-radius: 8px; width: 96%; height: 92%; position: absolute; left: 2%; top: 4%; z-index: 10; display: flex; flex-direction: column; padding: 6px; font-size: 11px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .grid-cell { background: white; min-height: 50px; position: relative; }
+        .header-cell { background: #fff0f3; position: sticky; top: 0; z-index: 100; height: 70px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border-bottom: 2px solid var(--pudra-pink); }
+        .header-cell b { color: var(--pudra-dark); font-size: 15px; }
+        .header-cell small { font-size: 10px; color: #888; font-weight: 500; }
+        .time-cell { background: #fafafa; font-weight: 600; position: sticky; left: 0; z-index: 90; width: 65px; display: flex; align-items: center; justify-content: center; color: var(--pudra-dark); font-size: 12px; }
+        
+        .slot { height: 50px; border-bottom: 1px solid #fff5f7; position: relative; }
+
+        .booked { 
+            background: #fff9fa; border-left: 5px solid var(--pudra-soft); border-radius: 8px; 
+            width: 96%; position: absolute; left: 2%; top: 2px; z-index: 50; 
+            display: flex; flex-direction: column; padding: 6px; font-size: 11px; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(216, 27, 96, 0.1); transition: transform 0.1s;
+            overflow: hidden;
+        }
         .booked.paid { border-left-color: var(--cash); background: #f1f8e9; }
-        .del-x { color: #f44336; border: none; background: none; position: absolute; top: 2px; right: 2px; cursor: pointer; font-size: 18px; font-weight: bold; }
-        input, select, textarea { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #fce4ec; border-radius: 15px; font-size: 15px; background: #fffcfd; font-weight: 500;}
+        .del-x { color: #f44336; border: none; background: none; position: absolute; top: 2px; right: 2px; cursor: pointer; font-size: 16px; font-weight: bold; z-index: 60; }
+
+        input:not([type="checkbox"]), select, textarea { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #fce4ec; border-radius: 15px; font-size: 15px; background: #fffcfd; font-weight: 500;}
+        textarea { height: 100px; resize: none; font-family: inherit; }
         .btn-main { background: var(--pudra-dark); color: white; border: none; padding: 18px; border-radius: 15px; width: 100%; cursor: pointer; font-weight: 600; font-size: 16px; transition: 0.3s; }
+        .btn-action { padding: 3px 8px; border-radius: 6px; border: none; font-size: 10px; font-weight: bold; cursor: pointer; color: white; }
+        
         .checkbox-group { max-height: 250px; overflow-y: auto; border: 1px solid #fce4ec; border-radius: 15px; padding: 15px; background: #fffcfd; margin: 10px 0; }
-        .cat-title { font-weight: bold; color: var(--pudra-dark); margin-top: 10px; margin-bottom: 5px; border-bottom: 1px solid #fce4ec; padding-bottom: 3px; font-size: 16px; }
-        .srv-label { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; font-size: 14px; cursor: pointer; }
-        .history-box { margin-top: 20px; padding: 15px; background: #fafafa; border-radius: 15px; border: 1px dashed var(--pudra-soft); }
-        .history-item { background: white; padding: 10px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid var(--pudra-pink); font-size: 13px; }
+        .cat-title { font-weight: bold; color: var(--pudra-dark); margin-top: 15px; margin-bottom: 8px; border-bottom: 1px solid #fce4ec; padding-bottom: 5px; font-size: 16px; }
+        .cat-title:first-child { margin-top: 0; }
+        .srv-label { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; font-size: 14px; cursor: pointer; text-align: left; }
+        .srv-label input[type="checkbox"] { width: 20px !important; height: 20px !important; flex-shrink: 0; margin: 0; cursor: pointer; accent-color: var(--pudra-dark); }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(216, 27, 96, 0.2); backdrop-filter: blur(5px); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 15px; }
+        .modal-card { background: white; padding: 25px; border-radius: 30px; width: 100%; max-width: 450px; position: relative; border: 4px solid var(--pudra-pink); max-height: 90vh; overflow-y: auto; }
+        .history-item { background: #fffcfd; padding: 10px; border-radius: 10px; margin-bottom: 8px; border-left: 3px solid var(--pudra-soft); font-size: 12px; }
+        
+        #navSearch { width: 140px; padding: 8px 15px; margin: 0 0 0 auto; border: 2px solid var(--pudra-pink); border-radius: 20px; font-size: 14px; outline: none; background: #fffafa; }
+        #navSearch:focus { border-color: var(--pudra-dark); }
+
+        .date-nav { display: flex; justify-content: center; align-items: center; gap: 15px; padding: 10px; }
+        .btn-date-nav { background: var(--pudra-pink); color: var(--pudra-dark); border: none; border-radius: 50%; width: 45px; height: 45px; font-size: 18px; cursor: pointer; transition: 0.2s; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 8px rgba(216, 27, 96, 0.1); }
+        .btn-date-nav:hover { background: var(--pudra-dark); color: white; transform: scale(1.1); }
+        
         .stat-box { display: flex; justify-content: space-between; padding: 15px; background: #fffcfd; border-radius: 15px; margin-bottom: 10px; border: 1px solid #fce4ec; align-items: center;}
         .stat-val { font-weight: 700; color: var(--pudra-dark); font-size: 18px; }
-        .master-salary-row { display: flex; justify-content: space-between; padding: 10px 15px; border-bottom: 1px dashed #fce4ec; font-size: 15px; }
-        #paymentModal { position: fixed; inset: 0; background: rgba(216, 27, 96, 0.2); backdrop-filter: blur(5px); z-index: 10000; display: none; align-items: center; justify-content: center; }
-        .modal-card { background: white; padding: 35px; border-radius: 30px; width: 90%; max-width: 350px; text-align: center; border: 4px solid var(--pudra-pink); }
+        .master-salary-row { display: flex; justify-content: space-between; padding: 10px 15px; border-bottom: 1px dashed #fce4ec; font-size: 15px; font-weight: 600;}
     </style>
 </head>
 <body>
 
 <div id="loginScreen">
-    <div class="login-card" style="padding: 40px; text-align: center; background: white; border-radius: 30px; border: 3px solid var(--pudra-pink); max-width: 400px; margin: auto; position: relative; top: 20%;">
+    <div class="login-card" style="padding: 40px; text-align: center; background: white; border-radius: 30px; border: 3px solid var(--pudra-pink); max-width: 400px; margin: 15vh auto;">
         <h1 style="color: var(--pudra-dark); font-size: 42px; font-style: italic;">Pudra</h1>
         <input type="email" id="loginEmail" placeholder="Email">
         <input type="password" id="loginPass" placeholder="Пароль">
@@ -56,13 +81,48 @@
     </div>
 </div>
 
-<div id="paymentModal">
+<div id="searchModal" class="modal-overlay">
     <div class="modal-card">
+        <h3 style="margin-top:0; color: var(--pudra-dark);">Результати пошуку</h3>
+        <div id="searchResultsContent" style="margin-top:15px; max-height: 60vh; overflow-y: auto;"></div>
+        <button onclick="closeSearch()" style="margin-top:15px; border:none; background:none; color:#aaa; cursor:pointer; width:100%; font-weight: 600;">Закрити</button>
+    </div>
+</div>
+
+<div id="detailsModal" class="modal-overlay">
+    <div class="modal-card">
+        <h3 id="detClientName" style="margin-top:0; color: var(--pudra-dark);">Клієнт</h3>
+        <p style="font-weight:600; margin-bottom:15px;">📱 <a id="detClientPhone" href="#" style="color: #7360f2; text-decoration: none;">380...</a></p>
+        <label style="font-size:12px; font-weight:700; color:var(--pudra-dark);">ТЕХНІЧНІ НОТАТКИ ТА МАТЕРІАЛИ:</label>
+        <textarea id="detMaterials" placeholder="Фарба, кількість, номер тону..."></textarea>
+        <button class="btn-main" id="btnSaveDetails">Зберегти зміни</button>
+        <div id="detHistoryContent" style="margin-top:15px;"></div>
+        <button onclick="document.getElementById('detailsModal').style.display='none'" style="margin-top:15px; border:none; background:none; color:#aaa; cursor:pointer; width:100%; font-weight: 600;">Закрити</button>
+    </div>
+</div>
+
+<div id="paymentModal" class="modal-overlay">
+    <div class="modal-card" style="text-align: center;">
         <h3>Оплата візиту</h3>
         <p id="paymentInfo" style="font-weight: 700; font-size: 22px; color: var(--pudra-dark);"></p>
         <button class="btn-main" style="background:var(--cash); margin-bottom:12px;" onclick="confirmPayment('Готівка')">💵 Готівка</button>
         <button class="btn-main" style="background:var(--card); margin-bottom:20px;" onclick="confirmPayment('Картка')">💳 Картка</button>
-        <button onclick="document.getElementById('paymentModal').style.display='none'" style="background:none; border:none; color:#aaa; cursor:pointer;">Скасувати</button>
+        <button onclick="document.getElementById('paymentModal').style.display='none'" style="background:none; border:none; color:#aaa; cursor:pointer; font-weight: 600;">Скасувати</button>
+    </div>
+</div>
+
+<div id="editMasterModal" class="modal-overlay">
+    <div class="modal-card">
+        <h3 style="margin-top:0; color: var(--pudra-dark);">Редагувати майстра</h3>
+        <div style="display:flex; gap:10px;">
+            <input type="text" id="editMFirstName" placeholder="Ім'я">
+            <input type="text" id="editMLastName" placeholder="Прізвище">
+        </div>
+        <input type="tel" id="editMPhone" placeholder="Номер телефону">
+        <input type="text" id="editMSpec" placeholder="Спеціалізація">
+        <input type="number" id="editMRate" placeholder="Базова Зарплата (%)">
+        <button class="btn-main" onclick="updateMaster()">Зберегти зміни</button>
+        <button onclick="document.getElementById('editMasterModal').style.display='none'" style="margin-top:15px; border:none; background:none; color:#aaa; cursor:pointer; width:100%; font-weight: 600;">Скасувати</button>
     </div>
 </div>
 
@@ -73,26 +133,33 @@
         <button id="btn-boss" class="admin-only hidden" onclick="showSection('boss')">📈 Звіти</button>
         <button id="btn-staff" class="admin-only hidden" onclick="showSection('staff')">👥 Майстри</button>
         <button id="btn-price" class="admin-only hidden" onclick="showSection('price')">💰 Прайс</button>
-        <button onclick="handleLogout()" style="margin-left:auto; border:none; background:none; font-size:24px;">🌸</button>
+        
+        <input type="text" id="navSearch" placeholder="🔍 Пошук..." oninput="doSearch()">
+        <button onclick="handleLogout()" style="border:none; background:none; font-size:24px; margin-left: 5px; padding: 5px;">🌸</button>
     </nav>
 
     <div class="container">
         <div id="section-cal" class="section">
-            <div style="text-align:center; padding:15px;"><input type="date" id="viewDateSelector" onchange="renderGrid()" style="width:auto; border-radius:30px; padding:10px 25px; font-weight: 600;"></div>
+            <div class="date-nav">
+                <button class="btn-date-nav" onclick="changeScheduleDate(-1)">◀</button>
+                <input type="date" id="viewDateSelector" onchange="renderGrid()" style="width:auto; border-radius:30px; padding:10px 25px; font-weight: 600; margin: 0; text-align: center; border: 2px solid var(--pudra-pink);">
+                <button class="btn-date-nav" onclick="changeScheduleDate(1)">▶</button>
+            </div>
+            
             <div class="schedule-wrap"><div class="grid" id="mainGrid"></div></div>
         </div>
 
         <div id="section-add" class="section hidden">
             <div class="card">
-                <h3>Створити запис</h3>
-                <div style="display:flex; gap:10px;"><input type="date" id="appDate"><input type="time" id="appTime" step="1800" value="09:00"></div>
+                <h3>Новий запис</h3>
+                <div style="display:flex; gap:10px;"><input type="date" id="appDate"><input type="time" id="appTime" step="1800" value="08:30"></div>
                 <input type="text" id="clientName" placeholder="Ім'я клієнта">
                 <input type="tel" id="clientPhone" placeholder="Номер телефону" oninput="searchClientHistory()">
                 <div id="serviceCheckboxes" class="checkbox-group"></div>
-                <textarea id="appMaterials" placeholder="Нотатки та матеріали..."></textarea>
+                <textarea id="appMaterials" placeholder="Нотатки..."></textarea>
                 <select id="selectMaster" onchange="recalcSalaryManual()"></select>
                 <div style="display:flex; gap:10px;"><input type="number" id="appDuration" placeholder="Хв"><input type="number" id="appPrice" placeholder="грн" oninput="recalcSalaryManual()"></div>
-                <input type="number" id="appMasterSalary" placeholder="ЗП майстра" style="background:#fff0f3; border-color:var(--pudra-soft); font-weight: 700;">
+                <input type="number" id="appMasterSalary" placeholder="ЗП майстра" style="background:#fff0f3; font-weight: 700;">
                 <button class="btn-main" onclick="addAppointment()">Зберегти</button>
                 <div id="clientHistoryContainer"></div>
             </div>
@@ -100,21 +167,19 @@
 
         <div id="section-boss" class="section hidden">
             <div class="card">
-                <h3>Фінансові підсумки</h3>
+                <h3>Звіти</h3>
                 <div style="display: flex; gap: 10px; margin-bottom: 20px;">
                     <input type="date" id="reportStart"> <input type="date" id="reportEnd">
                     <button class="btn-main" style="width: auto; padding: 14px 20px;" onclick="updateBossStats()">ОК</button>
                 </div>
                 <div id="bossStats"></div>
             </div>
-            <div class="card" style="border: 2px dashed var(--pudra-dark); background: #fffcfd;">
-                <h3 style="color: var(--pudra-dark);">💾 Резервне копіювання</h3>
-                <p style="font-size: 12px; color: #666;">Рекомендується робити копію щонеділі для безпеки ваших даних.</p>
+            <div class="card" style="border: 2px dashed var(--pudra-dark);">
+                <h3>💾 Бекап</h3>
                 <div style="display: flex; gap: 10px;">
-                    <button class="btn-main" style="background: var(--cash); flex: 1;" onclick="exportDatabase()">📥 Експорт бази (Save)</button>
-                    <label class="btn-main" style="background: var(--pudra-soft); color: var(--pudra-dark); flex: 1; text-align: center; cursor: pointer; display: flex; align-items: center; justify-content: center;">
-                        📤 Відкат (Restore)
-                        <input type="file" id="importFile" hidden onchange="importDatabase(event)">
+                    <button class="btn-main" style="background: var(--cash);" onclick="exportDatabase()">📥 Експорт</button>
+                    <label class="btn-main" style="background: var(--pudra-soft); color: var(--pudra-dark); text-align: center; cursor: pointer;">
+                        📤 Відкат <input type="file" hidden onchange="importDatabase(event)">
                     </label>
                 </div>
             </div>
@@ -122,12 +187,18 @@
 
         <div id="section-staff" class="section hidden">
             <div class="card">
-                <h3>Майстри</h3>
-                <div style="display:flex; gap:10px;"><input type="text" id="mFirstName" placeholder="Ім'я"><input type="text" id="mLastName" placeholder="Прізвище"></div>
+                <h3>Додати нового майстра</h3>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="mFirstName" placeholder="Ім'я">
+                    <input type="text" id="mLastName" placeholder="Прізвище">
+                </div>
+                <input type="tel" id="mPhone" placeholder="Номер телефону">
                 <input type="text" id="mSpec" placeholder="Спеціалізація">
                 <input type="number" id="mRate" placeholder="Зарплата (%)">
-                <button class="btn-main" onclick="saveMaster()">Додати</button>
-                <div id="staffListRender" style="margin-top:20px;"></div>
+                <button class="btn-main" onclick="saveMaster()">Створити</button>
+                
+                <h3 style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">Список майстрів</h3>
+                <div id="staffListRender" style="margin-top:10px;"></div>
             </div>
         </div>
 
@@ -147,7 +218,7 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    let masters = [], appointments = [], services = [], userRole = 'guest', currentPayId = null;
+    let masters = [], appointments = [], services = [], userRole = 'guest', currentPayId = null, currentEditMasterId = null;
 
     const todayStr = new Date().toISOString().split('T')[0];
     viewDateSelector.value = appDate.value = reportStart.value = reportEnd.value = todayStr;
@@ -173,86 +244,57 @@
         });
     }
 
-    // --- ЕКСПОРТ ТА ІМПОРТ (БЕКАП) ---
-    window.exportDatabase = async () => {
-        const backup = {
-            appointments: appointments,
-            masters: masters,
-            services: services,
-            backupDate: new Date().toISOString()
-        };
-        const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Pudra_Backup_${new Date().toISOString().split('T')[0]}.json`;
-        a.click();
-        alert("Копія бази даних успішно завантажена на ваш пристрій! 💾");
-    };
-
-    window.importDatabase = async (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
-        if (!confirm("УВАГА! Ця дія видалить поточні дані та замінить їх даними з файлу. Ви впевнені?")) return;
-
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-            try {
-                const data = JSON.parse(e.target.result);
-                const batch = writeBatch(db);
-
-                // Очистка та завантаження appointments
-                const appSnap = await getDocs(collection(db, "appointments"));
-                appSnap.forEach(d => batch.delete(d.ref));
-                data.appointments.forEach(a => {
-                    const {id, ...rest} = a;
-                    batch.set(doc(collection(db, "appointments")), rest);
+    window.renderServiceCheckboxes = () => {
+        const cats = ["Жіночий зал", "Чоловічий зал", "Манікюр", "Педикюр", "Брови та Вії", "Перманент", "Макіяж", "Доглядові процедури"];
+        let html = '';
+        cats.forEach(cat => {
+            const catServices = services.filter(s => s.category === cat);
+            if(catServices.length > 0) {
+                html += `<div class="cat-title">${cat}</div>`;
+                catServices.forEach(s => {
+                    html += `<label class="srv-label"><input type="checkbox" class="srv-cb" value="${s.id}" data-name="${s.name}" data-price="${s.price}" data-duration="${s.duration}" onchange="calcMultiService()"> ${s.name} <span style="color:#888; font-size:12px; font-weight: 600;">(${s.price} ₴)</span></label>`;
                 });
-
-                // Аналогічно для майстрів
-                const mastSnap = await getDocs(collection(db, "masters"));
-                mastSnap.forEach(d => batch.delete(d.ref));
-                data.masters.forEach(m => {
-                    const {id, ...rest} = m;
-                    batch.set(doc(collection(db, "masters")), rest);
-                });
-
-                await batch.commit();
-                alert("Дані успішно відновлено! Система перезавантажиться.");
-                location.reload();
-            } catch (err) {
-                alert("Помилка при читанні файлу бекапу.");
             }
-        };
-        reader.readAsText(file);
+        });
+        document.getElementById('serviceCheckboxes').innerHTML = html;
     };
 
-    // --- ІНШІ ФУНКЦІЇ (БЕЗ ЗМІН) ---
-    window.searchClientHistory = () => {
-        const phoneRaw = clientPhone.value.replace(/\D/g, '');
-        if (phoneRaw.length < 9) { clientHistoryContainer.innerHTML = ""; return; }
-        const history = appointments.filter(a => (a.clientPhone || "").replace(/\D/g, '') === phoneRaw && a.status === 'completed').sort((a,b)=>new Date(b.date)-new Date(a.date));
-        if (history.length === 0) { clientHistoryContainer.innerHTML = `<div class="history-box">Новий клієнт.</div>`; return; }
-        let h = `<div class="history-box"><h4>Історія: ${history[0].clientName}</h4>`;
-        history.forEach(x => h += `<div class="history-item"><b>${x.date}</b>: ${x.serviceName} (${x.price}₴) ${x.materials?`<br><i>${x.materials}</i>`:''}</div>`);
-        clientHistoryContainer.innerHTML = h + "</div>";
+    window.changeScheduleDate = (offset) => {
+        const dateInput = document.getElementById('viewDateSelector');
+        if (!dateInput.value) return;
+        const currentDate = new Date(dateInput.value);
+        currentDate.setDate(currentDate.getDate() + offset);
+        const yyyy = currentDate.getFullYear();
+        const mm = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const dd = String(currentDate.getDate()).padStart(2, '0');
+        dateInput.value = `${yyyy}-${mm}-${dd}`;
+        renderGrid();
     };
 
-    window.calcMultiService = () => {
-        let p=0, d=0; document.querySelectorAll('.srv-cb:checked').forEach(cb=>{p+=Number(cb.dataset.price); d+=Number(cb.dataset.duration);});
-        appPrice.value=p; appDuration.value=d; recalcSalaryManual();
+    window.doSearch = () => {
+        const q = document.getElementById('navSearch').value.toLowerCase().trim();
+        const container = document.getElementById('searchResultsContent');
+        if (q.length < 2) { document.getElementById('searchModal').style.display = 'none'; return; }
+        const results = appointments.filter(a => (a.clientName && a.clientName.toLowerCase().includes(q)) || (a.clientPhone && a.clientPhone.includes(q))).sort((a,b) => new Date(b.date) - new Date(a.date));
+        if (results.length === 0) { container.innerHTML = '<p style="text-align:center; color:#888;">Нічого не знайдено 🌸</p>'; } 
+        else {
+            let html = '';
+            results.forEach(a => {
+                const isPast = new Date(a.date) < new Date(todayStr);
+                const statusColor = a.status === 'completed' ? 'var(--cash)' : (isPast ? '#999' : 'var(--card)');
+                html += `<div style="background:#fffcfd; padding:12px; border-radius:10px; margin-bottom:10px; border-left:4px solid ${statusColor}; border: 1px solid #eee;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 5px;"><b style="color:var(--pudra-dark)">${a.clientName}</b><span style="font-weight:bold; color:${statusColor}">${a.date} о ${a.time}</span></div>
+                        <div style="font-size:12px; color:#555; margin-bottom: 8px;">✂️ ${a.masterId} | 🌸 ${a.serviceName}</div>
+                        <button onclick="goToDate('${a.date}')" style="background:var(--pudra-pink); color:var(--pudra-dark); border:none; border-radius:8px; padding:6px 12px; cursor:pointer; font-size:12px; font-weight:600; width:100%;">🗓 Перейти до цього дня</button>
+                    </div>`;
+            });
+            container.innerHTML = html;
+        }
+        document.getElementById('searchModal').style.display = 'flex';
     };
 
-    window.recalcSalaryManual = () => {
-        const m = masters.find(x=>x.name===selectMaster.value);
-        if(m) appMasterSalary.value = (Number(appPrice.value)*(m.rate/100)).toFixed(0);
-    };
-
-    window.addAppointment = async () => {
-        let sNames = []; document.querySelectorAll('.srv-cb:checked').forEach(cb=>sNames.push(cb.dataset.name));
-        await addDoc(collection(db, "appointments"), { clientName:clientName.value, clientPhone:clientPhone.value, serviceName:sNames.join(', '), materials:appMaterials.value, date:appDate.value, time:appTime.value, duration:Number(appDuration.value), masterId:selectMaster.value, price:Number(appPrice.value), masterSalary:Number(appMasterSalary.value), status:'pending' });
-        showSection('cal');
-    };
+    window.closeSearch = () => { document.getElementById('searchModal').style.display = 'none'; document.getElementById('navSearch').value = ''; };
+    window.goToDate = (date) => { closeSearch(); document.getElementById('viewDateSelector').value = date; showSection('cal'); };
 
     window.renderGrid = () => {
         const sD = viewDateSelector.value;
@@ -260,53 +302,139 @@
         grid.style.gridTemplateColumns = `65px repeat(${masters.length}, 1fr)`;
         let h = '<div class="grid-cell header-cell">🌸</div>';
         masters.forEach(m => h += `<div class="grid-cell header-cell"><b>${m.firstName}</b><small>${m.spec}</small></div>`);
-        for (let i = 9; i <= 18; i++) {
-            const h0=i.toString().padStart(2,'0')+":00", h3=i.toString().padStart(2,'0')+":30";
-            h += `<div class="grid-cell time-cell" style="height:100px">${h0}</div>`;
+        
+        for (let mMin = 8.5 * 60; mMin <= 21 * 60; mMin += 30) {
+            const hh = Math.floor(mMin / 60).toString().padStart(2, '0');
+            const mm = (mMin % 60).toString().padStart(2, '0');
+            const timeStr = `${hh}:${mm}`;
+
+            h += `<div class="grid-cell time-cell">${timeStr}</div>`;
             masters.forEach(m => {
-                h += `<div class="grid-cell" style="height:100px">`;
-                [h0,h3].forEach(t => {
-                    const b = appointments.find(a=>a.masterId===m.name && a.date===sD && isTimeInSession(a.time, a.duration, t));
-                    if(b && b.time===t) {
-                        const paid = b.status==='completed';
-                        h += `<div class="slot"><div class="booked ${paid?'paid':''}">
-                            ${userRole==='admin'&&!paid?`<button class="del-x" onclick="deleteApp('${b.id}')">&times;</button>`:''}
-                            <b>${b.clientName}</b><div style="font-size:9px">${b.serviceName}</div>
-                            <div class="app-controls"><a href="viber://chat?number=${b.clientPhone}" class="btn-action btn-viber">Viber</a>
-                            ${userRole==='admin'&&!paid?`<button class="btn-action" style="background:var(--cash)" onclick="openPayment('${b.id}')">Оплата</button>`:''}
-                        </div></div></div>`;
-                    } else h += `<div class="slot"></div>`;
-                });
+                const b = appointments.find(a => a.masterId === m.name && a.date === sD && a.time === timeStr);
+                h += `<div class="grid-cell slot">`;
+                if(b) {
+                    const paid = b.status === 'completed';
+                    const cardHeight = (b.duration / 30) * 50 - 4; 
+                    h += `<div class="booked ${paid?'paid':''}" onclick="openAppDetails('${b.id}')" style="height: ${cardHeight}px;">
+                        ${userRole==='admin'&&!paid?`<button class="del-x" onclick="event.stopPropagation(); deleteApp('${b.id}')">&times;</button>`:''}
+                        <b>${b.clientName}</b><div style="font-size:9px">${b.serviceName}</div>
+                        <div class="app-controls">
+                            <span style="font-size:9px; color:var(--cash); font-weight:bold">${paid ? b.paymentType : ''}</span>
+                            ${!paid && userRole==='admin' ? `<button class="btn-action" style="background:var(--cash)" onclick="event.stopPropagation(); openPayment('${b.id}')">💳</button>` : ''}
+                        </div>
+                    </div>`;
+                }
                 h += `</div>`;
             });
         }
         grid.innerHTML = h;
     };
 
+    window.openAppDetails = (id) => {
+        const a = appointments.find(x => x.id === id);
+        if(!a) return;
+        detClientName.innerText = a.clientName;
+        detClientPhone.innerText = a.clientPhone;
+        detClientPhone.href = `viber://chat?number=${a.clientPhone.replace(/\D/g, '')}`;
+        detMaterials.value = a.materials || "";
+        const history = appointments.filter(x => x.clientPhone === a.clientPhone && x.status === 'completed' && x.id !== a.id).sort((m1,m2) => new Date(m2.date) - new Date(m1.date));
+        detHistoryContent.innerHTML = history.map(h => `<div class="history-item"><b>${h.date}</b>: ${h.serviceName}<br><i>${h.materials || ''}</i></div>`).join('');
+        btnSaveDetails.onclick = async () => { await updateDoc(doc(db, "appointments", a.id), { materials: detMaterials.value }); document.getElementById('detailsModal').style.display = 'none'; };
+        document.getElementById('detailsModal').style.display = 'flex';
+    };
+    
+    window.addAppointment = async () => {
+        let sNames = []; document.querySelectorAll('.srv-cb:checked').forEach(cb=>sNames.push(cb.dataset.name));
+        await addDoc(collection(db, "appointments"), { clientName:clientName.value, clientPhone:clientPhone.value, serviceName:sNames.join(', '), materials:appMaterials.value, date:appDate.value, time:appTime.value, duration:Number(appDuration.value), masterId:selectMaster.value, price:Number(appPrice.value), masterSalary:Number(appMasterSalary.value), status:'pending' });
+        showSection('cal');
+    };
+    
     window.updateBossStats = () => {
         const apps = appointments.filter(a=>a.date>=reportStart.value && a.date<=reportEnd.value && a.status==='completed');
-        let t=0, c=0, card=0, sal=0; let mSal={};
-        apps.forEach(a=>{
-            t+=a.price; if(a.paymentType==='Готівка') c+=a.price; else card+=a.price;
-            let pay = a.masterSalary || 0; sal += pay;
-            if(!mSal[a.masterId]) mSal[a.masterId]=0; mSal[a.masterId]+=pay;
-        });
+        let t=0, sal=0; let mSal={};
+        apps.forEach(a=>{ t+=a.price; let pay=a.masterSalary||0; sal+=pay; if(!mSal[a.masterId]) mSal[a.masterId]=0; mSal[a.masterId]+=pay; });
         let res = `<div class="stat-box">Каса: <span class="stat-val">${t} ₴</span></div>`;
         for(let n in mSal) res += `<div class="master-salary-row"><span>${n}</span><b>${mSal[n].toFixed(0)} ₴</b></div>`;
         bossStats.innerHTML = res + `<div class="stat-box" style="margin-top:10px; background:#fff0f3">Прибуток: <span class="stat-val">${(t-sal).toFixed(0)} ₴</span></div>`;
     };
-
+    
     window.openPayment = (id) => { currentPayId=id; paymentInfo.innerText = appointments.find(x=>x.id===id).price+" ₴"; paymentModal.style.display='flex'; };
     window.confirmPayment = async (type) => { await updateDoc(doc(db, "appointments", currentPayId), { status:'completed', paymentType:type }); paymentModal.style.display='none'; };
-    window.deleteApp = async id => { if(confirm("Видалити?")) await deleteDoc(doc(db,"appointments",id)); };
-    window.saveMaster = async () => { await addDoc(collection(db,"masters"), {firstName:mFirstName.value, lastName:mLastName.value, rate:mRate.value, spec:mSpec.value, name:mFirstName.value+" "+mLastName.value}); };
-    window.renderStaffList = () => staffListRender.innerHTML = masters.map(m=>`<div class="card" style="display:flex; justify-content:space-between"><b>${m.name}</b><button onclick="deleteDoc(doc(db,'masters','${m.id}'))">🗑</button></div>`).join('');
-    window.renderServiceCheckboxes = () => {
-        let html = ''; services.forEach(s=> html += `<label class="srv-label"><input type="checkbox" class="srv-cb" value="${s.id}" data-name="${s.name}" data-price="${s.price}" data-duration="${s.duration}" onchange="calcMultiService()"> ${s.name} (${s.price}₴)</label>`);
-        serviceCheckboxes.innerHTML = html;
+    window.deleteApp = async id => { if(confirm("Видалити запис?")) await deleteDoc(doc(db,"appointments",id)); };
+    
+    // --- МАЙСТРИ З ТЕЛЕФОНОМ (ОНОВЛЕНО) ---
+    window.saveMaster = async () => { 
+        await addDoc(collection(db,"masters"), {
+            firstName: mFirstName.value, 
+            lastName: mLastName.value, 
+            phone: mPhone.value,
+            rate: Number(mRate.value), 
+            spec: mSpec.value, 
+            name: mFirstName.value+" "+mLastName.value
+        }); 
+        mFirstName.value = ""; mLastName.value = ""; mPhone.value = ""; mRate.value = ""; mSpec.value = "";
     };
-    function isTimeInSession(sT, sD, cT) { const [h1, m1]=sT.split(':').map(Number); const [h2, m2]=cT.split(':').map(Number); const start=h1*60+m1; const check=h2*60+m2; return check>=start && check<(start+sD); }
+    
+    window.deleteMaster = async id => { if(confirm("Дійсно видалити майстра?")) await deleteDoc(doc(db,"masters",id)); };
+    
+    window.openEditMaster = (id) => {
+        const m = masters.find(x => x.id === id);
+        if(!m) return;
+        currentEditMasterId = id;
+        document.getElementById('editMFirstName').value = m.firstName;
+        document.getElementById('editMLastName').value = m.lastName;
+        document.getElementById('editMPhone').value = m.phone || '';
+        document.getElementById('editMSpec').value = m.spec || '';
+        document.getElementById('editMRate').value = m.rate || '';
+        document.getElementById('editMasterModal').style.display = 'flex';
+    };
+
+    window.updateMaster = async () => {
+        const fName = document.getElementById('editMFirstName').value;
+        const lName = document.getElementById('editMLastName').value;
+        await updateDoc(doc(db, "masters", currentEditMasterId), {
+            firstName: fName,
+            lastName: lName,
+            phone: document.getElementById('editMPhone').value,
+            name: fName + " " + lName,
+            spec: document.getElementById('editMSpec').value,
+            rate: Number(document.getElementById('editMRate').value)
+        });
+        document.getElementById('editMasterModal').style.display = 'none';
+    };
+
+    function renderStaffList() { 
+        staffListRender.innerHTML = masters.map(m=>`
+            <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding: 15px;">
+                <div>
+                    <b style="font-size:16px; color:var(--pudra-dark);">${m.name}</b><br>
+                    <small style="color:#666; font-size:12px; font-weight:600;">${m.spec || 'Майстер'} • Ставка: ${m.rate || 0}%</small><br>
+                    <small style="color:var(--cash); font-weight:700;">📱 ${m.phone || 'Не вказано'}</small>
+                </div>
+                <div style="display:flex; gap:5px;">
+                    <button class="btn-action" style="background:var(--card); font-family: 'Montserrat', sans-serif; padding:8px 12px;" onclick="openEditMaster('${m.id}')">✏️</button>
+                    <button class="btn-action" style="background:#f44336; font-family: 'Montserrat', sans-serif; padding:8px 12px;" onclick="deleteMaster('${m.id}')">🗑</button>
+                </div>
+            </div>
+        `).join(''); 
+    }
+    
+    window.exportDatabase = async () => { const blob = new Blob([JSON.stringify({apps:appointments, masters}, null, 2)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `Pudra_Backup.json`; a.click(); };
+    window.importDatabase = async (e) => { const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = async (ev) => { const data = JSON.parse(ev.target.result); const batch = writeBatch(db); data.apps.forEach(a => batch.set(doc(collection(db, "appointments")), a)); await batch.commit(); location.reload(); }; reader.readAsText(file); };
+    window.calcMultiService = () => { let p=0, d=0; document.querySelectorAll('.srv-cb:checked').forEach(cb=>{p+=Number(cb.dataset.price); d+=Number(cb.dataset.duration);}); appPrice.value=p; appDuration.value=d; recalcSalaryManual(); };
+    window.recalcSalaryManual = () => { const m = masters.find(x=>x.name===selectMaster.value); if(m) appMasterSalary.value = (Number(appPrice.value)*(m.rate/100)).toFixed(0); };
     window.showSection = n => { document.querySelectorAll('.section').forEach(s=>s.classList.add('hidden')); document.getElementById('section-'+n).classList.remove('hidden'); document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active')); document.getElementById('btn-'+n).classList.add('active'); if(n==='cal') renderGrid(); };
+    
+    window.searchClientHistory = () => {
+        const phoneRaw = document.getElementById('clientPhone').value.replace(/\D/g, '');
+        const container = document.getElementById('clientHistoryContainer');
+        if (phoneRaw.length < 9) { container.innerHTML = ""; return; }
+        const history = appointments.filter(a => (a.clientPhone || "").replace(/\D/g, '') === phoneRaw && a.status === 'completed').sort((a, b) => new Date(b.date) - new Date(a.date));
+        if (history.length === 0) { container.innerHTML = `<div class="history-box"><p style="color:#888; font-size:13px; font-weight: 500; text-align:center; margin:0;">Новий клієнт. Історія відвідувань порожня 🌸</p></div>`; return; }
+        let html = `<div class="history-box"><h4 style="color:var(--pudra-dark); margin-top:0; margin-bottom:10px;">Історія візитів: <b>${history[0].clientName}</b></h4>`;
+        history.forEach(h => { html += `<div class="history-item"><div style="display:flex; justify-content:space-between; margin-bottom:5px;"><b>📅 ${h.date}</b><span style="color:var(--pudra-dark); font-weight:bold;">${h.price} ₴</span></div><div style="color:#555; margin-bottom:3px; font-weight: 500;">✂️ Майстер: ${h.masterId}</div><div style="color:#333; margin-bottom:3px; font-weight: 600;">🌸 ${h.serviceName}</div>${h.materials ? `<div style="color:#777; font-style:italic; border-top:1px dashed #eee; margin-top:5px; padding-top:5px; font-weight: 500;">📋 ${h.materials}</div>` : ''}</div>`; });
+        html += `</div>`; container.innerHTML = html;
+    };
 </script>
 </body>
 </html>
