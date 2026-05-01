@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Salon Pudra v40 - Masters Contacts</title>
+    <title>Salon Pudra v41 - Advanced Time & Hours</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
@@ -31,13 +31,20 @@
         .time-cell { background: #fafafa; font-weight: 600; position: sticky; left: 0; z-index: 90; width: 65px; display: flex; align-items: center; justify-content: center; color: var(--pudra-dark); font-size: 12px; }
         
         .slot { height: 50px; border-bottom: 1px solid #fff5f7; position: relative; }
+        
+        /* НОВЕ: Стиль для неробочих годин */
+        .disabled-slot {
+            background-color: #f5f5f5;
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.03) 10px, rgba(0,0,0,0.03) 20px);
+            pointer-events: none;
+        }
 
         .booked { 
             background: #fff9fa; border-left: 5px solid var(--pudra-soft); border-radius: 8px; 
-            width: 96%; position: absolute; left: 2%; top: 2px; z-index: 50; 
+            width: 96%; position: absolute; left: 2%; z-index: 50; 
             display: flex; flex-direction: column; padding: 6px; font-size: 11px; cursor: pointer;
             box-shadow: 0 4px 10px rgba(216, 27, 96, 0.1); transition: transform 0.1s;
-            overflow: hidden;
+            overflow: hidden; pointer-events: auto; /* Щоб на картку завжди можна було клікнути */
         }
         .booked.paid { border-left-color: var(--cash); background: #f1f8e9; }
         .del-x { color: #f44336; border: none; background: none; position: absolute; top: 2px; right: 2px; cursor: pointer; font-size: 16px; font-weight: bold; z-index: 60; }
@@ -120,6 +127,14 @@
         </div>
         <input type="tel" id="editMPhone" placeholder="Номер телефону">
         <input type="text" id="editMSpec" placeholder="Спеціалізація">
+        
+        <!-- НОВЕ: Поля для годин роботи -->
+        <label style="font-size:12px; font-weight:700; color:var(--pudra-dark); display:block; margin-top:10px;">ГОДИНИ РОБОТИ:</label>
+        <div style="display:flex; gap:10px; align-items: center;">
+            Від: <input type="time" id="editMStart" step="1800">
+            До: <input type="time" id="editMEnd" step="1800">
+        </div>
+
         <input type="number" id="editMRate" placeholder="Базова Зарплата (%)">
         <button class="btn-main" onclick="updateMaster()">Зберегти зміни</button>
         <button onclick="document.getElementById('editMasterModal').style.display='none'" style="margin-top:15px; border:none; background:none; color:#aaa; cursor:pointer; width:100%; font-weight: 600;">Скасувати</button>
@@ -152,7 +167,8 @@
         <div id="section-add" class="section hidden">
             <div class="card">
                 <h3>Новий запис</h3>
-                <div style="display:flex; gap:10px;"><input type="date" id="appDate"><input type="time" id="appTime" step="1800" value="08:30"></div>
+                <!-- НОВЕ: step="300" дозволяє вводити час з кроком у 5 хвилин (наприклад 14:20) -->
+                <div style="display:flex; gap:10px;"><input type="date" id="appDate"><input type="time" id="appTime" step="300" value="08:30"></div>
                 <input type="text" id="clientName" placeholder="Ім'я клієнта">
                 <input type="tel" id="clientPhone" placeholder="Номер телефону" oninput="searchClientHistory()">
                 <div id="serviceCheckboxes" class="checkbox-group"></div>
@@ -194,6 +210,14 @@
                 </div>
                 <input type="tel" id="mPhone" placeholder="Номер телефону">
                 <input type="text" id="mSpec" placeholder="Спеціалізація">
+                
+                <!-- НОВЕ: Поля для створення майстра -->
+                <label style="font-size:12px; font-weight:700; color:var(--pudra-dark); display:block; margin-top:10px;">ГОДИНИ РОБОТИ:</label>
+                <div style="display:flex; gap:10px; align-items: center;">
+                    Від: <input type="time" id="mStart" value="08:30" step="1800">
+                    До: <input type="time" id="mEnd" value="21:00" step="1800">
+                </div>
+
                 <input type="number" id="mRate" placeholder="Зарплата (%)">
                 <button class="btn-main" onclick="saveMaster()">Створити</button>
                 
@@ -243,6 +267,13 @@
             renderGrid(); if(userRole==='admin') updateBossStats();
         });
     }
+
+    // НОВЕ: Функція для точних математичних розрахунків часу
+    const timeToMinutes = (timeString) => {
+        if (!timeString) return 0;
+        const [hours, minutes] = timeString.split(':').map(Number);
+        return hours * 60 + minutes;
+    };
 
     window.renderServiceCheckboxes = () => {
         const cats = ["Жіночий зал", "Чоловічий зал", "Манікюр", "Педикюр", "Брови та Вії", "Перманент", "Макіяж", "Доглядові процедури"];
@@ -296,6 +327,7 @@
     window.closeSearch = () => { document.getElementById('searchModal').style.display = 'none'; document.getElementById('navSearch').value = ''; };
     window.goToDate = (date) => { closeSearch(); document.getElementById('viewDateSelector').value = date; showSection('cal'); };
 
+    // НОВЕ: Оновлений алгоритм рендерингу сітки
     window.renderGrid = () => {
         const sD = viewDateSelector.value;
         const grid = document.getElementById('mainGrid');
@@ -310,20 +342,38 @@
 
             h += `<div class="grid-cell time-cell">${timeStr}</div>`;
             masters.forEach(m => {
-                const b = appointments.find(a => a.masterId === m.name && a.date === sD && a.time === timeStr);
-                h += `<div class="grid-cell slot">`;
-                if(b) {
+                // Перевірка, чи це робочий час
+                const startMin = timeToMinutes(m.workStart || "08:30");
+                const endMin = timeToMinutes(m.workEnd || "21:00");
+                const isWorkingHour = (mMin >= startMin && mMin < endMin);
+
+                h += `<div class="grid-cell slot ${isWorkingHour ? '' : 'disabled-slot'}">`;
+                
+                // Знаходимо всі записи, що починаються у цьому 30-хвилинному діапазоні
+                const cellApps = appointments.filter(a => {
+                    if (a.masterId !== m.name || a.date !== sD) return false;
+                    const appStartMin = timeToMinutes(a.time);
+                    return appStartMin >= mMin && appStartMin < mMin + 30;
+                });
+
+                cellApps.forEach(b => {
                     const paid = b.status === 'completed';
+                    const appStartMin = timeToMinutes(b.time);
+                    
+                    // Точний розрахунок висоти і відступу зверху
                     const cardHeight = (b.duration / 30) * 50 - 4; 
-                    h += `<div class="booked ${paid?'paid':''}" onclick="openAppDetails('${b.id}')" style="height: ${cardHeight}px;">
+                    const topOffset = ((appStartMin - mMin) / 30) * 50 + 2; 
+
+                    h += `<div class="booked ${paid?'paid':''}" onclick="openAppDetails('${b.id}')" style="height: ${cardHeight}px; top: ${topOffset}px;">
                         ${userRole==='admin'&&!paid?`<button class="del-x" onclick="event.stopPropagation(); deleteApp('${b.id}')">&times;</button>`:''}
-                        <b>${b.clientName}</b><div style="font-size:9px">${b.serviceName}</div>
+                        <b>${b.time} - ${b.clientName}</b><div style="font-size:9px">${b.serviceName}</div>
                         <div class="app-controls">
                             <span style="font-size:9px; color:var(--cash); font-weight:bold">${paid ? b.paymentType : ''}</span>
                             ${!paid && userRole==='admin' ? `<button class="btn-action" style="background:var(--cash)" onclick="event.stopPropagation(); openPayment('${b.id}')">💳</button>` : ''}
                         </div>
                     </div>`;
-                }
+                });
+                
                 h += `</div>`;
             });
         }
@@ -362,12 +412,14 @@
     window.confirmPayment = async (type) => { await updateDoc(doc(db, "appointments", currentPayId), { status:'completed', paymentType:type }); paymentModal.style.display='none'; };
     window.deleteApp = async id => { if(confirm("Видалити запис?")) await deleteDoc(doc(db,"appointments",id)); };
     
-    // --- МАЙСТРИ З ТЕЛЕФОНОМ (ОНОВЛЕНО) ---
+    // --- МАЙСТРИ З РОБОЧИМИ ГОДИНАМИ ---
     window.saveMaster = async () => { 
         await addDoc(collection(db,"masters"), {
             firstName: mFirstName.value, 
             lastName: mLastName.value, 
             phone: mPhone.value,
+            workStart: document.getElementById('mStart').value,
+            workEnd: document.getElementById('mEnd').value,
             rate: Number(mRate.value), 
             spec: mSpec.value, 
             name: mFirstName.value+" "+mLastName.value
@@ -386,6 +438,8 @@
         document.getElementById('editMPhone').value = m.phone || '';
         document.getElementById('editMSpec').value = m.spec || '';
         document.getElementById('editMRate').value = m.rate || '';
+        document.getElementById('editMStart').value = m.workStart || '08:30';
+        document.getElementById('editMEnd').value = m.workEnd || '21:00';
         document.getElementById('editMasterModal').style.display = 'flex';
     };
 
@@ -396,6 +450,8 @@
             firstName: fName,
             lastName: lName,
             phone: document.getElementById('editMPhone').value,
+            workStart: document.getElementById('editMStart').value,
+            workEnd: document.getElementById('editMEnd').value,
             name: fName + " " + lName,
             spec: document.getElementById('editMSpec').value,
             rate: Number(document.getElementById('editMRate').value)
@@ -409,7 +465,7 @@
                 <div>
                     <b style="font-size:16px; color:var(--pudra-dark);">${m.name}</b><br>
                     <small style="color:#666; font-size:12px; font-weight:600;">${m.spec || 'Майстер'} • Ставка: ${m.rate || 0}%</small><br>
-                    <small style="color:var(--cash); font-weight:700;">📱 ${m.phone || 'Не вказано'}</small>
+                    <small style="color:var(--pudra-dark); font-weight:700;">🕒 Працює: ${m.workStart || '08:30'} - ${m.workEnd || '21:00'}</small>
                 </div>
                 <div style="display:flex; gap:5px;">
                     <button class="btn-action" style="background:var(--card); font-family: 'Montserrat', sans-serif; padding:8px 12px;" onclick="openEditMaster('${m.id}')">✏️</button>
