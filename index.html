@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Salon Pudra v45 - Visual Fixes</title>
+    <title>Salon Pudra v46 - Master Vacations</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
@@ -38,7 +38,6 @@
         .booked.paid { border-left-color: var(--cash); background: #f1f8e9; }
         .del-x { color: #f44336; border: none; background: none; position: absolute; top: 2px; right: 2px; cursor: pointer; font-size: 16px; font-weight: bold; z-index: 60; }
 
-        /* ВИПРАВЛЕННЯ: Жорстко забороняємо розтягуватися чекбоксам */
         input:not([type="checkbox"]), select, textarea { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #fce4ec; border-radius: 15px; font-size: 15px; background: #fffcfd; font-weight: 500;}
         textarea { height: 100px; resize: none; font-family: inherit; }
         .btn-main { background: var(--pudra-dark); color: white; border: none; padding: 18px; border-radius: 15px; width: 100%; cursor: pointer; font-weight: 600; font-size: 16px; transition: 0.3s; }
@@ -48,7 +47,6 @@
         .cat-title { font-weight: bold; color: var(--pudra-dark); margin-top: 15px; margin-bottom: 8px; border-bottom: 1px solid #fce4ec; padding-bottom: 5px; font-size: 16px; }
         .cat-title:first-child { margin-top: 0; }
         
-        /* ВИПРАВЛЕННЯ: Фіксований розмір для чекбоксів */
         .srv-label { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; font-size: 14px; cursor: pointer; text-align: left; }
         .srv-label input[type="checkbox"] { width: 20px !important; height: 20px !important; flex-shrink: 0; margin: 0; cursor: pointer; accent-color: var(--pudra-dark); }
 
@@ -129,7 +127,13 @@
         <input type="text" id="editMSpec" placeholder="Спеціалізація">
         
         <label style="font-size:12px; font-weight:700; color:var(--pudra-dark); display:block; margin-top:10px; margin-bottom:5px;">ГРАФІК ПО ДНЯХ:</label>
-        <div id="editMasterScheduleContainer" style="max-height: 200px; overflow-y: auto; margin-bottom: 10px;"></div>
+        <div id="editMasterScheduleContainer" style="max-height: 160px; overflow-y: auto; margin-bottom: 10px;"></div>
+
+        <label style="font-size:12px; font-weight:700; color:var(--pudra-dark); display:block; margin-top:10px; margin-bottom:5px;">🌴 ВІДПУСТКА / ЛІКАРНЯНИЙ (БЛОКУВАННЯ ДАТ):</label>
+        <div style="display:flex; gap:10px; align-items: center; margin-bottom: 10px;">
+            З: <input type="date" id="editMVacationStart" style="margin:0; padding:8px;">
+            По: <input type="date" id="editMVacationEnd" style="margin:0; padding:8px;">
+        </div>
 
         <input type="number" id="editMRate" placeholder="Базова Зарплата (%)">
         <button class="btn-main" onclick="updateMaster()">Зберегти зміни</button>
@@ -209,7 +213,13 @@
                 <input type="text" id="mSpec" placeholder="Спеціалізація">
                 
                 <label style="font-size:12px; font-weight:700; color:var(--pudra-dark); display:block; margin-top:10px; margin-bottom:5px;">ГРАФІК ПО ДНЯХ:</label>
-                <div id="newMasterScheduleContainer" style="max-height: 200px; overflow-y: auto; margin-bottom: 10px;"></div>
+                <div id="newMasterScheduleContainer" style="max-height: 160px; overflow-y: auto; margin-bottom: 10px;"></div>
+
+                <label style="font-size:12px; font-weight:700; color:var(--pudra-dark); display:block; margin-top:10px; margin-bottom:5px;">🌴 ВІДПУСТКА / ЛІКАРНЯНИЙ (БЛОКУВАННЯ ДАТ):</label>
+                <div style="display:flex; gap:10px; align-items: center; margin-bottom: 10px;">
+                    З: <input type="date" id="mVacationStart" style="margin:0; padding:8px;">
+                    По: <input type="date" id="mVacationEnd" style="margin:0; padding:8px;">
+                </div>
 
                 <input type="number" id="mRate" placeholder="Зарплата (%)">
                 <button class="btn-main" onclick="saveMaster()">Створити</button>
@@ -311,7 +321,12 @@
                 const daySchedule = (m.schedule && m.schedule[selectedDayOfWeek]) ? m.schedule[selectedDayOfWeek] : defaultDaySchedule;
                 const startMin = timeToMinutes(daySchedule.start);
                 const endMin = timeToMinutes(daySchedule.end);
-                const isWorkingHour = daySchedule.active && (mMin >= startMin && mMin < endMin);
+                
+                // НОВЕ: Перевірка, чи поточна дата (sD) потрапляє у відпустку майстра
+                const isVacation = m.vacationStart && m.vacationEnd && (sD >= m.vacationStart && sD <= m.vacationEnd);
+                
+                // Якщо у майстра відпустка, клітинка автоматично стає неактивною
+                const isWorkingHour = daySchedule.active && (mMin >= startMin && mMin < endMin) && !isVacation;
 
                 h += `<div class="grid-cell slot ${isWorkingHour ? '' : 'disabled-slot'}">`;
                 
@@ -460,9 +475,59 @@
         });
     }
 
-    window.saveMaster = async () => { await addDoc(collection(db,"masters"), { firstName: mFirstName.value, lastName: mLastName.value, phone: mPhone.value, schedule: getScheduleFromDOM('new'), rate: Number(mRate.value), spec: mSpec.value, name: mFirstName.value+" "+mLastName.value }); mFirstName.value = ""; mLastName.value = ""; mPhone.value = ""; mRate.value = ""; mSpec.value = ""; };
-    window.openEditMaster = (id) => { const m = masters.find(x => x.id === id); if(!m) return; currentEditMasterId = id; document.getElementById('editMFirstName').value = m.firstName; document.getElementById('editMLastName').value = m.lastName; document.getElementById('editMPhone').value = m.phone || ''; document.getElementById('editMSpec').value = m.spec || ''; document.getElementById('editMRate').value = m.rate || ''; let sched = m.schedule; if (!sched) { sched = {}; weekDays.forEach(day => sched[day.id] = { active: true, start: m.workStart || "08:30", end: m.workEnd || "21:00" }); } setScheduleToDOM('edit', sched); document.getElementById('editMasterModal').style.display = 'flex'; };
-    window.updateMaster = async () => { const fName = document.getElementById('editMFirstName').value; const lName = document.getElementById('editMLastName').value; await updateDoc(doc(db, "masters", currentEditMasterId), { firstName: fName, lastName: lName, phone: document.getElementById('editMPhone').value, schedule: getScheduleFromDOM('edit'), name: fName + " " + lName, spec: document.getElementById('editMSpec').value, rate: Number(document.getElementById('editMRate').value) }); document.getElementById('editMasterModal').style.display = 'none'; };
+    // ОНОВЛЕНО: Збереження дат відпустки для нового майстра
+    window.saveMaster = async () => { 
+        await addDoc(collection(db,"masters"), { 
+            firstName: mFirstName.value, 
+            lastName: mLastName.value, 
+            phone: mPhone.value, 
+            schedule: getScheduleFromDOM('new'), 
+            vacationStart: document.getElementById('mVacationStart').value,
+            vacationEnd: document.getElementById('mVacationEnd').value,
+            rate: Number(mRate.value), 
+            spec: mSpec.value, 
+            name: mFirstName.value+" "+mLastName.value 
+        }); 
+        mFirstName.value = ""; mLastName.value = ""; mPhone.value = ""; mRate.value = ""; mSpec.value = ""; 
+        document.getElementById('mVacationStart').value = "";
+        document.getElementById('mVacationEnd').value = "";
+    };
+
+    // ОНОВЛЕНО: Читання дат відпустки при редагуванні
+    window.openEditMaster = (id) => { 
+        const m = masters.find(x => x.id === id); 
+        if(!m) return; 
+        currentEditMasterId = id; 
+        document.getElementById('editMFirstName').value = m.firstName; 
+        document.getElementById('editMLastName').value = m.lastName; 
+        document.getElementById('editMPhone').value = m.phone || ''; 
+        document.getElementById('editMSpec').value = m.spec || ''; 
+        document.getElementById('editMRate').value = m.rate || ''; 
+        document.getElementById('editMVacationStart').value = m.vacationStart || '';
+        document.getElementById('editMVacationEnd').value = m.vacationEnd || '';
+        let sched = m.schedule; 
+        if (!sched) { sched = {}; weekDays.forEach(day => sched[day.id] = { active: true, start: m.workStart || "08:30", end: m.workEnd || "21:00" }); } 
+        setScheduleToDOM('edit', sched); 
+        document.getElementById('editMasterModal').style.display = 'flex'; 
+    };
+
+    // ОНОВЛЕНО: Збереження нових дат відпустки в базу
+    window.updateMaster = async () => { 
+        const fName = document.getElementById('editMFirstName').value; 
+        const lName = document.getElementById('editMLastName').value; 
+        await updateDoc(doc(db, "masters", currentEditMasterId), { 
+            firstName: fName, 
+            lastName: lName, 
+            phone: document.getElementById('editMPhone').value, 
+            schedule: getScheduleFromDOM('edit'), 
+            vacationStart: document.getElementById('editMVacationStart').value,
+            vacationEnd: document.getElementById('editMVacationEnd').value,
+            name: fName + " " + lName, 
+            spec: document.getElementById('editMSpec').value, 
+            rate: Number(document.getElementById('editMRate').value) 
+        }); 
+        document.getElementById('editMasterModal').style.display = 'none'; 
+    };
     
     window.renderServiceCheckboxes = () => { const cats = ["Жіночий зал", "Чоловічий зал", "Манікюр", "Педикюр", "Брови та Вії", "Перманент", "Макіяж", "Доглядові процедури"]; let html = ''; cats.forEach(cat => { const catServices = services.filter(s => s.category === cat); if(catServices.length > 0) { html += `<div class="cat-title">${cat}</div>`; catServices.forEach(s => { html += `<label class="srv-label"><input type="checkbox" class="srv-cb" value="${s.id}" data-name="${s.name}" data-price="${s.price}" data-duration="${s.duration}" onchange="calcMultiService()"> ${s.name} <span style="color:#888; font-size:12px; font-weight: 600;">(${s.price} ₴)</span></label>`; }); } }); document.getElementById('serviceCheckboxes').innerHTML = html; };
     window.changeScheduleDate = (offset) => { const dateInput = document.getElementById('viewDateSelector'); if (!dateInput.value) return; const currentDate = new Date(dateInput.value); currentDate.setDate(currentDate.getDate() + offset); const yyyy = currentDate.getFullYear(); const mm = String(currentDate.getMonth() + 1).padStart(2, '0'); const dd = String(currentDate.getDate()).padStart(2, '0'); dateInput.value = `${yyyy}-${mm}-${dd}`; renderGrid(); };
@@ -474,7 +539,25 @@
     window.confirmPayment = async (type) => { await updateDoc(doc(db, "appointments", currentPayId), { status:'completed', paymentType:type }); paymentModal.style.display='none'; };
     window.deleteApp = async id => { if(confirm("Видалити запис?")) await deleteDoc(doc(db,"appointments",id)); };
     window.deleteMaster = async id => { if(confirm("Дійсно видалити майстра?")) await deleteDoc(doc(db,"masters",id)); };
-    function renderStaffList() { staffListRender.innerHTML = masters.map(m=>`<div class="card" style="display:flex; justify-content:space-between; align-items:center; padding: 15px;"><div><b style="font-size:16px; color:var(--pudra-dark);">${m.name}</b><br><small style="color:#666; font-size:12px; font-weight:600;">${m.spec || 'Майстер'} • Ставка: ${m.rate || 0}%</small><br><small style="color:var(--cash); font-weight:700;">📱 ${m.phone || 'Не вказано'}</small></div><div style="display:flex; gap:5px;"><button class="btn-action" style="background:var(--card); font-family: 'Montserrat', sans-serif; padding:8px 12px;" onclick="openEditMaster('${m.id}')">✏️</button><button class="btn-action" style="background:#f44336; font-family: 'Montserrat', sans-serif; padding:8px 12px;" onclick="deleteMaster('${m.id}')">🗑</button></div></div>`).join(''); }
+    
+    // ОНОВЛЕНО: Відображення статусу відпустки у списку майстрів
+    function renderStaffList() { 
+        staffListRender.innerHTML = masters.map(m=>`
+            <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding: 15px;">
+                <div>
+                    <b style="font-size:16px; color:var(--pudra-dark);">${m.name}</b><br>
+                    <small style="color:#666; font-size:12px; font-weight:600;">${m.spec || 'Майстер'} • Ставка: ${m.rate || 0}%</small><br>
+                    <small style="color:var(--cash); font-weight:700;">📱 ${m.phone || 'Не вказано'}</small>
+                    ${m.vacationStart && m.vacationEnd ? `<br><small style="color:#e65100; font-weight:700;">🌴 Відпустка: з ${m.vacationStart} по ${m.vacationEnd}</small>` : ''}
+                </div>
+                <div style="display:flex; gap:5px;">
+                    <button class="btn-action" style="background:var(--card); font-family: 'Montserrat', sans-serif; padding:8px 12px;" onclick="openEditMaster('${m.id}')">✏️</button>
+                    <button class="btn-action" style="background:#f44336; font-family: 'Montserrat', sans-serif; padding:8px 12px;" onclick="deleteMaster('${m.id}')">🗑</button>
+                </div>
+            </div>
+        `).join(''); 
+    }
+    
     window.exportDatabase = async () => { const blob = new Blob([JSON.stringify({apps:appointments, masters}, null, 2)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `Pudra_Backup.json`; a.click(); };
     window.importDatabase = async (e) => { const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = async (ev) => { const data = JSON.parse(ev.target.result); const batch = writeBatch(db); data.apps.forEach(a => setDoc(doc(collection(db, "appointments")), a)); await batch.commit(); location.reload(); }; reader.readAsText(file); };
     window.calcMultiService = () => { let p=0, d=0; document.querySelectorAll('.srv-cb:checked').forEach(cb=>{p+=Number(cb.dataset.price); d+=Number(cb.dataset.duration);}); appPrice.value=p; appDuration.value=d; recalcSalaryManual(); };
